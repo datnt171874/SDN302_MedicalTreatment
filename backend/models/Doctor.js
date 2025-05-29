@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const doctorSchema = new Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   certificates: [
     {
       name: { type: String, required: true },
@@ -24,8 +24,16 @@ const doctorSchema = new Schema({
       level: { type: String, required: true },
     },
   ],
-  workSchedule: { type: String }, // JSON string, e.g., '{"monday": "08:00-16:00"}'
+  workSchedule:
+   { 
+    days:[String],
+    hours: {
+      start: {type: String},
+      end: {type: String}
+    } 
+  },
   createdAt: { type: Date, default: Date.now },
+  updatedAt: {type: Date}
 });
 
 module.exports = mongoose.model('Doctor', doctorSchema);

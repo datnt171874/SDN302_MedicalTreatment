@@ -5,9 +5,11 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
 
 const authRoute = require("./routes/authRoute")
+const appointmentRoute = require("./routes/appointmentRoute")
 const doctorRoute = require("./routes/doctorRoute")
 dotenv.config();
 const app = express()
+const PORT = process.env.PORT
 
 mongoose.connect(process.env.MONGODB_CONNECT_URI,{
   useNewUrlParser: true,
@@ -15,7 +17,7 @@ mongoose.connect(process.env.MONGODB_CONNECT_URI,{
 })
 .then(()=>{ 
   console.log("Connected to MongoDB");
-  app.listen(3000, ()=> console.log("Server is running on port 3000"));
+  app.listen(PORT, ()=> console.log("Server is running on port", PORT));
 })
 .catch(err => {
   console.error("MongoDB connection error:", err);
@@ -28,6 +30,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use("/api/auth", authRoute)
-app.user("/api/doctor", doctorRoute)
+app.use("/api/appointment", appointmentRoute)
+app.use("/api/doctor", doctorRoute)
 
 

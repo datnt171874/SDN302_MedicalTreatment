@@ -9,6 +9,7 @@ const appointmentSchema = new Schema({
   appointmentType: { type: String, enum: ['Consultation', 'Examination'], required: true },
   price: { type: Number, required: true },
   isAnonymous: { type: Boolean, default: false },
+  isRevisit: {type: Boolean, required: true},
   status: {
     type: String,
     enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],

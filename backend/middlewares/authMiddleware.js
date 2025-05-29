@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 const authenticate = (req, res, next)=>{
-    const token = req.header('Authorization').split(" ")[1];
+    const token = req.headers['authorization']?.split(" ")[1];
     console.log('Authorization token: ', token ? '[Token existed]' : '[No token]');
     if(!token){
         console.log("No token found");
@@ -9,7 +9,7 @@ const authenticate = (req, res, next)=>{
     }
         
     try {
-        const decoded = jwt.verify(token, proccess.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log("Decoded: ", decoded);
         
         req.user = {id: decoded.id, roleName: decoded.roleName};
