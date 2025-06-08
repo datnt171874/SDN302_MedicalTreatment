@@ -43,7 +43,7 @@ const BlogPostCard = ({ post }) => {
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Button size="small" color="primary" variant="text">
-            Đọc thêm
+          Read more
           </Button>
         </Box>
       </CardContent>

@@ -24,7 +24,7 @@ const Footer = () => {
         borderColor: "primary.light",
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ px: { xs: 5, md: 12 } }}>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={3}>
             <Typography
@@ -35,8 +35,7 @@ const Footer = () => {
               Medical Treatment
             </Typography>
             <Typography variant="body2" color="#FFFFFF" sx={{ mb: 2 }}>
-              Nâng cao chất lượng cuộc sống cho người nhiễm HIV thông qua thông
-              tin và hỗ trợ toàn diện.
+              Enhancing the quality of life for people living with HIV through comprehensive information and support.
             </Typography>
             <Box sx={{ mt: 2 }}>
               <IconButton sx={{ color: "#FFFFFF" }} aria-label="Facebook">
@@ -60,7 +59,7 @@ const Footer = () => {
               gutterBottom
               sx={{ fontWeight: "bold", color: "#FFFFFF" }}
             >
-              Liên kết nhanh
+              Quick Links
             </Typography>
             <MuiLink
               href="/"
@@ -68,7 +67,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Trang chủ
+              Home
             </MuiLink>
             <MuiLink
               href="/services"
@@ -76,7 +75,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Dịch vụ
+              Services
             </MuiLink>
             <MuiLink
               href="/about"
@@ -84,7 +83,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Giới thiệu
+              About Us
             </MuiLink>
             <MuiLink
               href="/testimonial"
@@ -92,7 +91,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Phản hồi
+              Testimonials
             </MuiLink>
             <MuiLink
               href="/contact"
@@ -100,7 +99,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Liên hệ
+              Contact
             </MuiLink>
           </Grid>
 
@@ -110,7 +109,7 @@ const Footer = () => {
               gutterBottom
               sx={{ fontWeight: "bold", color: "#FFFFFF" }}
             >
-              Hỗ trợ
+              Support
             </Typography>
             <MuiLink
               href="/faq"
@@ -118,7 +117,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Câu hỏi thường gặp
+              FAQ
             </MuiLink>
             <MuiLink
               href="/privacy"
@@ -126,7 +125,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Chính sách bảo mật
+              Privacy Policy
             </MuiLink>
             <MuiLink
               href="/terms"
@@ -134,7 +133,7 @@ const Footer = () => {
               display="block"
               sx={{ mb: 1, "&:hover": { color: "secondary.main" } }}
             >
-              Điều khoản dịch vụ
+              Terms of Service
             </MuiLink>
           </Grid>
 
@@ -144,15 +143,15 @@ const Footer = () => {
               gutterBottom
               sx={{ fontWeight: "bold", color: "#FFFFFF" }}
             >
-              Bản tin của chúng tôi
+              Our Newsletter
             </Typography>
             <Typography variant="body2" color="#FFFFFF" sx={{ mb: 2 }}>
-              Đăng ký để nhận thông tin mới nhất về các tiến bộ điều trị HIV.
+              Subscribe to receive the latest updates on HIV treatment advancements.
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <input
                 type="email"
-                placeholder="Nhập email của bạn"
+                placeholder="Enter your email"
                 style={{
                   padding: "10px",
                   borderRadius: "4px",
@@ -169,7 +168,7 @@ const Footer = () => {
                 fullWidth
                 sx={{ color: "#FFFFFF" }}
               >
-                Đăng ký
+                Subscribe
               </Button>
             </Box>
           </Grid>
@@ -178,8 +177,7 @@ const Footer = () => {
         <Divider sx={{ my: 4, backgroundColor: "rgba(255, 255, 255, 0.2)" }} />
 
         <Typography variant="body2" align="center" color="#FFFFFF">
-          © {new Date().getFullYear()} Medical Treatment. Tất cả quyền được bảo
-          lưu. Thiết kế bởi Medical Treatment.
+          © {new Date().getFullYear()} Medical Treatment. All rights reserved. Designed by Medical Treatment.
         </Typography>
       </Container>
     </Box>

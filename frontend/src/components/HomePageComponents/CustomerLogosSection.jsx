@@ -24,12 +24,12 @@ const CustomerLogosSection = () => {
   return (
     <Box sx={{
       backgroundColor: 'background.default',
-      py: 2,
+      py: 8,
       textAlign: 'center',
     }}>
-      <Container maxWidth="lg">
-        <Typography variant="h3" color="primary.main" sx={{ mb: 1, fontWeight: 'bold' }}>
-          Đội ngũ chuyên gia
+      <Container maxWidth={false} sx={{ px: { xs: 5, md: 12 } }}>
+        <Typography variant="h3" align="center" sx={{ mb: 6, fontWeight: 'bold', color: 'primary.main', fontSize: { xs: 32, md: 40 } }}>
+          Team of experts
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 0, gap: 1 }}>
           {/* <Rating name="read-only" value={4} precision={0.5} readOnly size="small" />
@@ -39,8 +39,11 @@ const CustomerLogosSection = () => {
         <Box sx={{
           overflow: 'hidden',
           width: '100%',
-          maxWidth: '1200px', // Constrain the width of the scrolling area
-          mx: 'auto', // Center the scrolling area
+          maxWidth: '1200px',
+          mx: 'auto',
+          display: 'flex',
+          justifyContent: 'center',
+          mb: 8,
         }}>
           <Box 
             sx={{
