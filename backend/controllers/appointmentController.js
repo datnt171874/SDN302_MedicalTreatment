@@ -5,7 +5,7 @@ const generateAppointmentCode = () => {
     return `C-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
-const createAppointment =async () => {
+const createAppointment = async (req, res) => {
     const { doctorId, appointmentDate, duration, appointmentType, isRevisit} = req.body;
     const userId = req.user.userId;
 
@@ -38,6 +38,10 @@ const createAppointment =async () => {
 
     await newAppointment.save();
     res.status(201).json(newAppointment);
+}
+const getAppointmentByCustomerId = async(req, res) => {
+    const {userId } = req.user.id;
+    const user = Appointment.find({userId, status: "Confirmed" });
 }
 
 module.exports = {createAppointment}
