@@ -2,16 +2,16 @@ import React from "react";
 import { Box, Container, Grid, Typography } from "@mui/material";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import HeroSection from "../components/HeroSection";
-import CustomerLogosSection from "../components/CustomerLogosSection";
-import ServicesSection from "../components/ServicesSection";
-import AboutUsSection from "../components/AboutUsSection";
-import WhyChooseUsSection from "../components/WhyChooseUsSection";
-import TestimonialsSection from "../components/TestimonialsSection";
-import FAQSection from "../components/FAQSection";
-import ContactFormSection from "../components/ContactFormSection";
-import FadeInOnScroll from "../components/FadeInOnScroll";
-import BlogPostCard from "../components/BlogPostCard";
+import HeroSection from "../components/HomePageComponents/HeroSection";
+import CustomerLogosSection from "../components/HomePageComponents/CustomerLogosSection";
+import ServicesSection from "../components/HomePageComponents/ServicesSection";
+import AboutUsSection from "../components/HomePageComponents/AboutUsSection";
+import WhyChooseUsSection from "../components/HomePageComponents/WhyChooseUsSection";
+import TestimonialsSection from "../components/HomePageComponents/TestimonialsSection";
+import FAQSection from "../components/HomePageComponents/FAQSection";
+import ContactFormSection from "../components/HomePageComponents/ContactFormSection";
+import FadeInOnScroll from "../components/HomePageComponents/FadeInOnScroll";
+import BlogPostCard from "../components/HomePageComponents/BlogPostCard";
 import blogPosts from "../data/blogPosts";
 
 const Home = () => {
@@ -28,7 +28,9 @@ const Home = () => {
 
       <Box sx={{ flexGrow: 1 }}>
         <FadeInOnScroll duration="0.8s">
-          <HeroSection />
+          <div id="hero-section">
+            <HeroSection />
+          </div>
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s">
@@ -36,11 +38,15 @@ const Home = () => {
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.4s">
-          <ServicesSection />
+          <div id="services">
+            <ServicesSection />
+          </div>
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.2s">
-          <AboutUsSection />
+          <div id="about-us">
+            <AboutUsSection />
+          </div>
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.4s">
@@ -48,7 +54,9 @@ const Home = () => {
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.2s">
-          <TestimonialsSection />
+          <div id="testimonial">
+            <TestimonialsSection />
+          </div>
         </FadeInOnScroll>
 
         {/* Blog Section */}
@@ -60,14 +68,20 @@ const Home = () => {
               textAlign: "center",
             }}
           >
-            <Container maxWidth="lg">
+            <Container maxWidth={false} sx={{ px: { xs: 5, md: 12 } }}>
               <Typography
-                variant="h4"
+                variant="h3"
                 component="h2"
+                align="center"
                 gutterBottom
-                sx={{ mb: 6, fontWeight: "bold", color: "text.primary" }}
+                sx={{
+                  mb: 6,
+                  fontWeight: "bold",
+                  color: "primary.main",
+                  fontSize: { xs: 32, md: 40 },
+                }}
               >
-                Tin tức & Blog
+                News & Blog
               </Typography>
               <Grid container spacing={4} justifyContent="center">
                 {blogPosts.map((post) => (
@@ -80,10 +94,12 @@ const Home = () => {
           </Box>
         </FadeInOnScroll>
         <FadeInOnScroll duration="0.8s" delay="0.8s">
-          <ContactFormSection />
+          <FAQSection />
         </FadeInOnScroll>
         <FadeInOnScroll duration="0.8s" delay="1.0s">
-          <FAQSection />
+          <div id="contact-us">
+            <ContactFormSection />
+          </div>
         </FadeInOnScroll>
       </Box>
 

@@ -20,33 +20,33 @@ import {
 const services = [
   {
     icon: <Healing sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Tư vấn và Xét nghiệm',
-    description: 'Cung cấp dịch vụ tư vấn và xét nghiệm HIV bí mật, chính xác, đảm bảo quyền riêng tư và hỗ trợ tâm lý.',
+    title: 'Consultation & Testing',
+    description: 'Confidential and accurate HIV consultation and testing services, ensuring privacy and psychological support.',
   },
   {
     icon: <LocalHospital sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Điều trị ARV',
-    description: 'Phác đồ điều trị ARV cá nhân hóa, theo dõi sức khỏe định kỳ và quản lý tác dụng phụ để đạt hiệu quả tốt nhất.',
+    title: 'ARV Treatment',
+    description: 'Personalized ARV treatment regimens, regular health monitoring, and side effect management for optimal results.',
   },
   {
     icon: <People sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Hỗ trợ Cộng đồng',
-    description: 'Kết nối với các nhóm hỗ trợ, chương trình đồng đẳng viên và hoạt động xã hội giúp người nhiễm HIV vượt qua khó khăn.',
+    title: 'Community Support',
+    description: 'Connect with support groups, peer programs, and social activities to help people living with HIV overcome challenges.',
   },
   {
     icon: <VerifiedUser sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Phòng ngừa Lây nhiễm',
-    description: 'Hướng dẫn về các biện pháp phòng ngừa lây nhiễm HIV cho bản thân và cộng đồng, bao gồm PrEP và PEP.',
+    title: 'Infection Prevention',
+    description: 'Guidance on HIV prevention methods for yourself and the community, including PrEP and PEP.',
   },
   {
     icon: <Psychology sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Tư vấn Tâm lý',
-    description: 'Dịch vụ tư vấn tâm lý chuyên nghiệp, giúp người nhiễm HIV đối mặt với căng thẳng, lo âu và cải thiện sức khỏe tinh thần.',
+    title: 'Psychological Counseling',
+    description: 'Professional psychological counseling services to help people living with HIV cope with stress, anxiety, and improve mental health.',
   },
   {
     icon: <Favorite sx={{ fontSize: 40, color: 'primary.main' }} />,
-    title: 'Chăm sóc Toàn diện',
-    description: 'Đảm bảo chất lượng cuộc sống toàn diện với dịch vụ chăm sóc sức khỏe tổng thể, dinh dưỡng và vận động.',
+    title: 'Comprehensive Care',
+    description: 'Ensure overall quality of life with holistic health care services, nutrition, and exercise.',
   },
 ];
 
@@ -54,14 +54,14 @@ const ServicesSection = () => {
   return (
     <Box sx={{
       backgroundColor: 'background.default',
-      py: 8,
+      py: 14,
     }}>
-      <Container maxWidth="lg">
-        <Typography variant="h6" color="primary.main" align="center" sx={{ mb: 1, fontWeight: 'bold' }}>
-          Dịch vụ của chúng tôi
+      <Container maxWidth={false} sx={{ px: { xs: 5, md: 12 } }}>
+        <Typography variant="h6" align="center" sx={{ mb: 1, fontWeight: 'bold', color: 'primary.main', fontSize: { xs: 32, md: 40 } }}>
+          Our Services
         </Typography>
-        <Typography variant="h3" color="primary.main" component="h2" align="center" gutterBottom sx={{ mb: 6 }}>
-          Chăm sóc toàn diện cho người nhiễm HIV
+        <Typography variant="h3" component="h2" align="center" gutterBottom sx={{ mb: 6, fontWeight: 'bold', color: 'primary.main', fontSize: { xs: 32, md: 40 } }}>
+          Comprehensive care for people living with HIV
         </Typography>
 
         <Grid container spacing={4}>
@@ -70,6 +70,7 @@ const ServicesSection = () => {
               <Card elevation={0} sx={{
                 textAlign: 'center',
                 p: 3,
+                minHeight: 220,
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',

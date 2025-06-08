@@ -19,16 +19,16 @@ const WhyChooseUsSection = () => {
   return (
     <Box sx={{
       backgroundColor: 'background.default',
-      py: 8,
+      py: 14,
     }}>
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ px: { xs: 5, md: 12 } }}>
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={6}>
-            <Typography variant="h1"  color="primary.main" component="h2" gutterBottom sx={{ mb: 3 }}>
-            Tại sao chọn chúng tôi
+            <Typography variant="h1" align="center" component="h2" gutterBottom sx={{ mb: 3, fontWeight: 'bold', color: 'primary.main', fontSize: { xs: 32, md: 40 } }}>
+              Why Choose Us
             </Typography>
             <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>
-              Chúng tôi cung cấp một cách tiếp cận toàn diện và nhân ái để hỗ trợ những người sống chung với HIV, đảm bảo bạn nhận được sự chăm sóc tốt nhất.
+              We provide a comprehensive and compassionate approach to support people living with HIV, ensuring you receive the best care possible.
             </Typography>
             <List>
               <ListItem disableGutters sx={{ mb: 2 }}>
@@ -36,8 +36,8 @@ const WhyChooseUsSection = () => {
                   <VerifiedUserIcon color="primary" />
                 </ListItemIcon>
                 <ListItemText 
-                  primary={<Typography variant="h6" color="primary.main" sx={{ fontWeight: 'bold' }}>Chăm sóc chất lượng đáng tin cậy</Typography>}
-                  secondary={<Typography variant="body2" color="text.secondary">Đảm bảo quyền riêng tư, thông tin chính xác và dịch vụ tận tâm.</Typography>}
+                  primary={<Typography variant="h6" color="primary.main" sx={{ fontWeight: 'bold' }}>Reliable Quality Care</Typography>}
+                  secondary={<Typography variant="body2" color="text.secondary">Ensuring privacy, accurate information, and dedicated service.</Typography>}
                 />
               </ListItem>
               <ListItem disableGutters>
@@ -45,8 +45,8 @@ const WhyChooseUsSection = () => {
                   <EmojiEventsIcon color="primary" />
                 </ListItemIcon>
                 <ListItemText 
-                  primary={<Typography variant="h6" color="primary.main" sx={{ fontWeight: 'bold' }}>Chuyên gia xuất sắc</Typography>}
-                  secondary={<Typography variant="body2" color="text.secondary">Đội ngũ chuyên gia y tế hàng đầu với kinh nghiệm sâu rộng trong lĩnh vực HIV.</Typography>}
+                  primary={<Typography variant="h6" color="primary.main" sx={{ fontWeight: 'bold' }}>Outstanding Experts</Typography>}
+                  secondary={<Typography variant="body2" color="text.secondary">A leading team of medical experts with extensive experience in the field of HIV.</Typography>}
                 />
               </ListItem>
             </List>
