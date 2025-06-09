@@ -1,0 +1,21 @@
+.checkin-container {
+  background-color: #eae7d6;
+}
+.checkin-title {
+  font-size: 2rem;
+  color: #5d7b6f;
+  text-align: center;
+  margin-top: 20px;
+}
+.checkin-description {
+  font-size: 1.2rem;
+  margin: 30px auto;
+  max-width: 1000px;
+}
+.checkin-head {
+  padding: 20px;
+  margin: 0 20px;
+}
+.checkin-content {
+  min-height: 100vh;
+}
