@@ -5,7 +5,7 @@ const appointmentSchema = new Schema({
   doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: true },
   appointmentCode: {type: Number, required: true},
   appointmentDate: { type: Date, required: true },
-  duration: { type: String, enum: ['30', '60', '90'], required: true },
+  duration: { type: String, enum: ['30', '60'], required: true },
   appointmentType: { type: String, enum: ['Consultation', 'Examination'], required: true },
   price: { type: Number, required: true },
   isAnonymous: { type: Boolean, default: false },
