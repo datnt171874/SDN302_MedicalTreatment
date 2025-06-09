@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "./CheckinPage.css";
 function CheckinPage() {
@@ -51,7 +50,6 @@ function CheckinPage() {
 
   return (
     <div className="checkin-container">
-      <Header />
       <div className="checkin-content">
         <div className="checkin-head">
           <Typography
