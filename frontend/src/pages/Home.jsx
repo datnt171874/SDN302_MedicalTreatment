@@ -1,6 +1,5 @@
 import React from "react";
 import { Box, Container, Grid, Typography } from "@mui/material";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 import HeroSection from "../components/HomePageComponents/HeroSection";
 import CustomerLogosSection from "../components/HomePageComponents/CustomerLogosSection";
@@ -22,13 +21,14 @@ const Home = () => {
         flexDirection: "column",
         minHeight: "100vh",
         backgroundColor: "background.default",
+        overflowX: "hidden",
       }}
     >
-      <Header />
+      {/* <Header /> */}
 
       <Box sx={{ flexGrow: 1 }}>
         <FadeInOnScroll duration="0.8s">
-          <div id="hero-section">
+          <div id="hero-section" sx={{ scrollMarginTop: '100px' }}>
             <HeroSection />
           </div>
         </FadeInOnScroll>
@@ -38,13 +38,13 @@ const Home = () => {
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.4s">
-          <div id="services">
+          <div id="services" sx={{ scrollMarginTop: '100px' }}>
             <ServicesSection />
           </div>
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.2s">
-          <div id="about-us">
+          <div id="about-us" sx={{ scrollMarginTop: '100px' }}>
             <AboutUsSection />
           </div>
         </FadeInOnScroll>
@@ -54,7 +54,7 @@ const Home = () => {
         </FadeInOnScroll>
 
         <FadeInOnScroll duration="0.8s" delay="0.2s">
-          <div id="testimonial">
+          <div id="testimonial" sx={{ scrollMarginTop: '100px' }}>
             <TestimonialsSection />
           </div>
         </FadeInOnScroll>
@@ -97,7 +97,7 @@ const Home = () => {
           <FAQSection />
         </FadeInOnScroll>
         <FadeInOnScroll duration="0.8s" delay="1.0s">
-          <div id="contact-us">
+          <div id="contact-us" sx={{ scrollMarginTop: '100px' }}>
             <ContactFormSection />
           </div>
         </FadeInOnScroll>

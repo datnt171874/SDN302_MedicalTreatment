@@ -75,6 +75,10 @@ const Header = () => {
                   letterSpacing: 1,
                   fontFamily: 'Montserrat, sans-serif',
                   cursor: 'pointer',
+                  transition: 'color 0.3s ease-in-out',
+                  '&:hover': {
+                    color: '#A4C3A2',
+                  },
                 }}
               >
                 MEDICAL TREATMENT
@@ -83,16 +87,148 @@ const Header = () => {
             {/* Menu căn giữa */}
             <Grid item xs={8} sx={{ display: { xs: "none", md: "flex" }, justifyContent: "center" }}>
               <Box sx={{ display: "flex", gap: 4 }}>
-                <Button onClick={handleNavClick('hero-section')} sx={{ color: "#fff", fontWeight: 700, fontSize: 18, px: 2 }}>
+                <Button
+                  onClick={handleNavClick('hero-section')}
+                  sx={{
+                    color: location.pathname === '/' ? '#A4C3A2' : "#fff",
+                    fontWeight: location.pathname === '/' ? 700 : 600,
+                    fontSize: 18,
+                    px: 2,
+                    borderRadius: '8px',
+                    border: 'none',
+                    bgcolor: 'transparent',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      color: '#A4C3A2',
+                      fontWeight: 700,
+                      backgroundColor: 'primary.dark',
+                      border: 'none',
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                  }}
+                >
                   Home
                 </Button>
-                <Button onClick={handleNavClick('services')} sx={{ color: "#fff", fontWeight: 600, fontSize: 18, px: 2 }}>
+                <Button
+                  onClick={handleNavClick('services')}
+                  sx={{
+                    color: location.pathname === '/' && window.location.hash === '#services' ? '#A4C3A2' : "#fff",
+                    fontWeight: location.pathname === '/' && window.location.hash === '#services' ? 700 : 600,
+                    fontSize: 18,
+                    px: 2,
+                    borderRadius: '8px',
+                    border: location.pathname === '/' && window.location.hash === '#services' ? '1px solid #fff' : 'none',
+                    bgcolor: location.pathname === '/' && window.location.hash === '#services' ? 'primary.dark' : 'transparent',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      color: '#A4C3A2',
+                      fontWeight: 700,
+                      backgroundColor: 'primary.dark',
+                      border: 'none',
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                  }}
+                >
                   Services
                 </Button>
-                <Button onClick={handleNavClick('about-us')} sx={{ color: "#fff", fontWeight: 600, fontSize: 18, px: 2 }}>
+                <Button
+                  onClick={handleNavClick('about-us')}
+                  sx={{
+                    color: location.pathname === '/' && window.location.hash === '#about-us' ? '#A4C3A2' : "#fff",
+                    fontWeight: location.pathname === '/' && window.location.hash === '#about-us' ? 700 : 600,
+                    fontSize: 18,
+                    px: 2,
+                    borderRadius: '8px',
+                    border: location.pathname === '/' && window.location.hash === '#about-us' ? '1px solid #fff' : 'none',
+                    bgcolor: location.pathname === '/' && window.location.hash === '#about-us' ? 'primary.dark' : 'transparent',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      color: '#A4C3A2',
+                      fontWeight: 700,
+                      backgroundColor: 'primary.dark',
+                      border: 'none',
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                  }}
+                >
                   About Us
                 </Button>
-                <Button onClick={handleNavClick('testimonial')} sx={{ color: "#fff", fontWeight: 600, fontSize: 18, px: 2 }}>
+                <Button
+                  onClick={handleNavClick('testimonial')}
+                  sx={{
+                    color: location.pathname === '/' && window.location.hash === '#testimonial' ? '#A4C3A2' : "#fff",
+                    fontWeight: location.pathname === '/' && window.location.hash === '#testimonial' ? 700 : 600,
+                    fontSize: 18,
+                    px: 2,
+                    borderRadius: '8px',
+                    border: location.pathname === '/' && window.location.hash === '#testimonial' ? '1px solid #fff' : 'none',
+                    bgcolor: location.pathname === '/' && window.location.hash === '#testimonial' ? 'primary.dark' : 'transparent',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    textTransform: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      color: '#A4C3A2',
+                      fontWeight: 700,
+                      backgroundColor: 'primary.dark',
+                      border: 'none',
+                      outline: 'none',
+                      boxShadow: 'none',
+                    },
+                    '&:focus': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                    '&:focus-visible': {
+                      outline: 'none',
+                      boxShadow: 'none',
+                      border: 'none',
+                    },
+                  }}
+                >
                   Testimonial
                 </Button>
               </Box>

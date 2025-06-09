@@ -11,6 +11,7 @@ import {
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const cards = [
   {
@@ -43,7 +44,7 @@ const HeroSection = () => {
         position: 'relative',
         minHeight: '100vh',
         height: '100vh',
-        width: '100vw',
+        width: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -57,7 +58,7 @@ const HeroSection = () => {
         sx={{
           position: 'absolute',
           inset: 0,
-          width: '100vw',
+          width: '100%',
           height: '100vh',
           zIndex: 1,
         }}
@@ -89,7 +90,7 @@ const HeroSection = () => {
         />
       </Box>
       <Container maxWidth={false} sx={{ position: 'relative', zIndex: 3, px: { xs: 2, md: 12 }, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', pb: { xs: 8, md: 12 } }}>
-        <Box sx={{ textAlign: 'center', mb: 6, mt: 0 }}>
+        <Box sx={{ textAlign: 'center', mb: 6, mt: 0, pt: { xs: 24, md: 32 } }}>
           <Typography
             variant="h2"
             sx={{
@@ -110,12 +111,44 @@ const HeroSection = () => {
               fontSize: { xs: 16, md: 20 },
               maxWidth: 700,
               mx: 'auto',
-              mb: 0,
+              mb: 3,
               fontWeight: 400,
             }}
           >
             Book appointments easily with top hospitals and trusted doctors.<br />Get fast access to medical services and expert care.
           </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Box
+              component="button"
+              sx={{
+                px: 6,
+                py: 2,
+                fontSize: 22,
+                fontWeight: 700,
+                borderRadius: 3,
+                bgcolor: 'primary.main',
+                color: '#fff',
+                boxShadow: '0 8px 32px rgba(25, 118, 210, 0.25), 0 4px 16px rgba(0,0,0,0.12)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'background 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                  transform: 'translateY(-3px)',
+                  boxShadow: '0 12px 48px rgba(25, 118, 210, 0.35), 0 6px 24px rgba(0,0,0,0.18)',
+                },
+              }}
+              onClick={() => {
+                const contactSection = document.getElementById('contact');
+                if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Book Now <ArrowForwardIosIcon sx={{ fontSize: 18 }} />
+            </Box>
+          </Box>
         </Box>
         <Grid container spacing={3} alignItems="flex-end" justifyContent="center" sx={{ position: 'relative', zIndex: 2, mb: { xs: 2, md: 6 } }}>
           {/* Cards */}
