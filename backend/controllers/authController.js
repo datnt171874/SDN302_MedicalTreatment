@@ -2,47 +2,91 @@ const User = require('../models/User.js')
 const Doctor = require('../models/Doctor.js')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-
+const mongoose = require('mongoose')
 const authController = {
+    // registerController: async (req, res) => {
+    //     try {
+    //         console.log("Received at backend:", req.body);
+    //         console.log("Fields received:", { userName, password, email});
+    //         const { userName, password, email} = req.body
+    //         if (!userName || !password || !email) {
+    //             return res.status(400).json({
+    //                 error: "Missing required fields",
+    //                 required: ["userName", "password", "email"]
+    //             })
+    //         }
+    //         const existingUser = await User.findOne({ userName });
+    //         if (existingUser) {
+    //             return res.status(400).json({error: "Username already exists"});
+    //         }
+    //         const salt = await bcrypt.genSalt(10)
+    //         const hashedPassword = await bcrypt.hash(password, salt);
+
+    //         const newUser = new User({
+    //             userName,
+    //             password: hashedPassword,
+    //             email,
+    //             roleName: "Customer"
+    //         })
+    //         const user = await newUser.save();
+    //         res.status(201).json(user)
+    //     } catch (error) {
+    //         console.error("Register error:", error);
+    //         if (error.code === 11000) {
+    //             return res.status(400).json({
+    //                 error: "Username already exists"
+    //             })
+    //         }
+    //         res.status(500).json({
+    //             error: "Internal server error",
+    //             message: error.message
+    //         })
+    //     }
+    // },
     registerController: async (req, res) => {
-        try {
-            const { userName, password, email, fullName } = req.body
-            if (!userName || !password || !email || !fullName) {
-                return res.status(400).json({
-                    error: "Missing required fields",
-                    required: ["userName", "password", "email", "fullName"]
-                })
-            }
+    try {
+        const { userName, password, email} = req.body;
 
-            const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash(password, salt);
+        console.log("Received at backend:", { userName, password, email });
 
-            const newUser = new User({
-                userName,
-                password: hashedPassword,
-                email,
-                fullName,
-                roleName: role || "Customer"
-            })
-            const user = await newUser.save();
-            res.status(201).json(user)
-        } catch (error) {
-            console.error("Register error:", error);
-            if (error.code === 11000) {
-                return res.status(400).json({
-                    error: "Username already exists"
-                })
-            }
-            res.status(500).json({
-                error: "Internal server error",
-                message: error.message
-            })
+        if ([userName, password, email].some(field => !field?.trim())) {
+            return res.status(400).json({
+                error: "Missing required fields",
+                required: ["userName", "password", "email"]
+            });
         }
-    },
+
+        const existingUser = await User.findOne({ userName });
+        if (existingUser) {
+            return res.status(400).json({ error: "Username already exists" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newUser = new User({
+            userName, 
+            password: hashedPassword,
+            email,
+            roleName: "Customer" 
+        });
+
+        const savedUser = await newUser.save();
+        res.status(201).json(savedUser);
+
+    } catch (error) {
+        console.error("Register error:", error);
+        res.status(500).json({
+            error: "Internal server error",
+            message: error.message
+        });
+    }
+},
 
     loginController: async (req, res) => {
         try {
             const { userName, password } = req.body;
+            console.log("Login with:", { userName, password });
             if (!userName || !password) {
                 return res.status(400).json({
                     error: "Missing credentials",
@@ -89,6 +133,42 @@ const authController = {
                 error: "Internal server error",
                 message: error.message
             });
+        }
+    },
+
+    getAllUsersController: async (req, res) => {
+        try {
+            const users = await User.find().select("-password -__v");
+            res.status(200).json(users);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            res.status(500).json({
+                error: "Internal server error",
+                message: error.message
+            });
+        }
+    },
+    
+    deleteUserController: async (req, res) => {
+        try {
+            const userId = req.params.id;
+            console.log("DELETE userId:", req.params.id);
+
+            if (!userId) {
+            return res.status(400).json({ error: "Invalid user ID" });
+            }
+            const user = await User.findByIdAndDelete(userId);
+            if (!user) {
+                return res.status(404).json({ error: "User not found" });
+            }
+            res.status(200).json({ message: "User deleted successfully" });
+            console.log("User deleted:", user);
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            res.status(500).json({
+                error: "Internal server error",
+                message: error.message
+            }); 
         }
     },
 

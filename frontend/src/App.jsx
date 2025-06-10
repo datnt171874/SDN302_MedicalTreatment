@@ -3,6 +3,9 @@ import "./App.css";
 import CheckinPage from "./pages/CheckinPage";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import AdminPanel from "./pages/AdminPanel";
+import DoctorPage from "./pages/DoctorPage";
 import User from "./pages/User";
 import Header from "./components/Header";
 
