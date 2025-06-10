@@ -9,6 +9,8 @@ import {
   Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({ userName: '', password: '', email: '' });
@@ -17,20 +19,12 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Registration successful:', data);
-        navigate('/login');
-      } else {
-        alert(data.message || 'Registration failed');
-      }
+      const response = await axios.post('http://localhost:3000/api/auth/register', formData);
+      console.log("Sending to backend:", formData);
+      console.log('Registration successful:', response.data);
+      navigate('/login');
     } catch (error) {
-      console.error('Error registering:', error.message);
+      console.error('Error registering:', error.response?.data?.message || error.message);
     }
   };
 

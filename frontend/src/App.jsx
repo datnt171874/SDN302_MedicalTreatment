@@ -22,6 +22,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/doctor" element={<DoctorPage />} />
+        <Route path="/user" element={<User />} />
+
       </Routes>
     </>
   );

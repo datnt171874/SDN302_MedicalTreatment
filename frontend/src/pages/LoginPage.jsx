@@ -9,28 +9,48 @@ import {
   Grid,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ userName: '', password: '' });
   const navigate = useNavigate();
 
+  // const handleSubmit = async (e) => {Add commentMore actions
+//     e.preventDefault();
+//     try {
+//       const response = await axios.post('http://localhost:3000/api/auth/login', formData);
+//       localStorage.setItem('token', response.data.token);
+//       console.log('Login successful:', response.data);Add commentMore actions
+//       navigate('/');
+//     } catch (error) {
+//       console.error('Error logging in:', error.response?.data?.message || error.message);
+//     }
+//   };
+
+
+//admin1 12345 | doctor1 12345 | user1 12345
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        navigate('/');
+      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
+      const {roleName, token} = response.data;
+      if (token) {
+        localStorage.setItem('token', token);
+        if (roleName === 'Doctor') {
+          navigate('/doctor');
+        } else if (roleName === 'Admin') {
+          navigate('/admin');
+        } else if (roleName === 'Customer') {
+          navigate('/user');
+        }else {
+          alert('Unknown role');
+        }
       } else {
-        alert(data.message || 'Login failed');
+        alert('Login failed: No token received');
       }
     } catch (error) {
       console.error('Login error:', error);
+      alert(error.response?.data?.message || 'An error occurred during login');
     }
   };
 
