@@ -19,7 +19,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/checkin" element={<CheckinPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/user" element={<User />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/doctor" element={<DoctorPage />} />
       </Routes>
     </>
   );
