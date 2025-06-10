@@ -12,9 +12,13 @@ import ContactFormSection from "../components/HomePageComponents/ContactFormSect
 import FadeInOnScroll from "../components/HomePageComponents/FadeInOnScroll";
 import BlogPostCard from "../components/HomePageComponents/BlogPostCard";
 import blogPosts from "../data/blogPosts";
+import Logout from "../components/Logout";
+import LoginPage from "./LoginPage";
+import { Route, Routes } from "react-router-dom";
 
 const Home = () => {
   return (
+    
     <Box
       sx={{
         display: "flex",
@@ -104,20 +108,12 @@ const Home = () => {
       </Box>
 
       <Footer />
+    <Logout/>
+
     </Box>
+    
   );
 };
-import LoginPage from "./LoginPage";
-import { Route, Routes } from "react-router-dom";
-import Logout from "../components/Logout";
 
-function Home() {
-  return (
-    <>Home <br/>
-    <Logout/>
-    </>
-    
-);
-}
 
 export default Home;
