@@ -52,7 +52,6 @@ function CheckinPage() {
 
   return (
     <div className="checkin-container">
-      <Header />
       <div className="checkin-content">
         <div className="checkin-head">
           <Typography

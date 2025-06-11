@@ -2,55 +2,29 @@ import React, { useState } from 'react';
 import {
   Box,
   Container,
-  TextField,
-  Typography,
-  Button,
-  Paper,
   Grid,
+  Paper,
+  Typography,
+  TextField,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const LoginPage = () => {
-  const [formData, setFormData] = useState({ userName: '', password: '' });
+
+const RegisterPage = () => {
+  const [formData, setFormData] = useState({ userName: '', password: '', email: '' });
   const navigate = useNavigate();
 
-  // const handleSubmit = async (e) => {Add commentMore actions
-//     e.preventDefault();
-//     try {
-//       const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-//       localStorage.setItem('token', response.data.token);
-//       console.log('Login successful:', response.data);Add commentMore actions
-//       navigate('/');
-//     } catch (error) {
-//       console.error('Error logging in:', error.response?.data?.message || error.message);
-//     }
-//   };
-
-
-//admin1 12345 | doctor1 12345 | user1 12345
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-      const {roleName, token} = response.data;
-      if (token) {
-        localStorage.setItem('token', token);
-        if (roleName === 'Doctor') {
-          navigate('/doctor');
-        } else if (roleName === 'Admin') {
-          navigate('/admin');
-        } else if (roleName === 'Customer') {
-          navigate('/user');
-        }else {
-          alert('Unknown role');
-        }
-      } else {
-        alert('Login failed: No token received');
-      }
+      const response = await axios.post('http://localhost:3000/api/auth/register', formData);
+      console.log("Sending to backend:", formData);
+      console.log('Registration successful:', response.data);
+      navigate('/login');
     } catch (error) {
-      console.error('Login error:', error);
-      alert(error.response?.data?.message || 'An error occurred during login');
+      console.error('Error registering:', error.response?.data?.message || error.message);
     }
   };
 
@@ -74,7 +48,7 @@ const LoginPage = () => {
           }}
         >
           <Grid container spacing={4}>
-            {/* Left intro */}
+            {/* Left Info */}
             <Grid
               item
               xs={12}
@@ -91,14 +65,13 @@ const LoginPage = () => {
               }}
             >
               <Typography variant="h4" fontWeight="bold" mb={2}>
-                Welcome
+                Create Your Account
               </Typography>
               <Typography variant="body1">
-                Please Log In & We can help you easily!!! 
+                Join us to heal your mind and body with our comprehensive health solutions.
               </Typography>
-
               <Button
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
                 variant="outlined"
                 sx={{
                   mt: 4,
@@ -110,40 +83,41 @@ const LoginPage = () => {
                   },
                 }}
               >
-                Don’t have an account? Sign Up
+                Already have an account? Sign In
               </Button>
             </Grid>
 
-            {/* Right form */}
+            {/* Right Form */}
             <Grid item xs={12} md={6}>
-              <Typography
-                variant="h5"
-                fontWeight="bold"
-                color="text.primary"
-                mb={3}
-              >
-                Login to Your Account
+              <Typography variant="h5" fontWeight="bold" mb={3}>
+                Register a New Account
               </Typography>
-
               <form onSubmit={handleSubmit}>
                 <TextField
                   fullWidth
                   margin="normal"
                   label="Username"
                   value={formData.userName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, userName: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                  required
                 />
                 <TextField
                   fullWidth
                   margin="normal"
-                  type="password"
                   label="Password"
+                  type="password"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
                 <Button
                   type="submit"
@@ -157,21 +131,21 @@ const LoginPage = () => {
                     borderRadius: 2,
                   }}
                 >
-                  Login →
+                  Register →
                 </Button>
-                {/* <Typography
-                  variant="body2"
-                  sx={{
-                    mt: 2,
-                    textAlign: 'center',
-                    color: 'primary.main',
-                    cursor: 'pointer',
-                    '&:hover': { textDecoration: 'underline' },
-                  }}
-                >
-                  Forgot your password? Click here
-                </Typography> */}
               </form>
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 2,
+                  textAlign: 'center',
+                  color: 'primary.main',
+                  cursor: 'pointer',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
+                Forgot your password? Click here
+              </Typography>
             </Grid>
           </Grid>
         </Paper>
@@ -180,4 +154,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
