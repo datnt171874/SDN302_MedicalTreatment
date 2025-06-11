@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -38,6 +39,8 @@ const cards = [
 ];
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -142,8 +145,19 @@ const HeroSection = () => {
                 },
               }}
               onClick={() => {
-                const contactSection = document.getElementById('contact');
-                if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
+                // Placeholder for checking if user is logged in
+                const checkUserLoggedIn = () => {
+                  // In a real application, this would check for a token in localStorage
+                  // or a global authentication state (e.g., from a Context API)
+                  return false; // For demonstration, assume user is not logged in
+                };
+
+                if (!checkUserLoggedIn()) {
+                  navigate('/login');
+                } else {
+                  const contactSection = document.getElementById('contact');
+                  if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
+                }
               }}
             >
               Book Now <ArrowForwardIosIcon sx={{ fontSize: 18 }} />
