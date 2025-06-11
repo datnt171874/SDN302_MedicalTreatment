@@ -10,6 +10,9 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import "./CheckinPage.css";
 function CheckinPage() {
   const [patientId, setPatientId] = useState("");
   const [patient, setPatient] = useState(null);
@@ -17,11 +20,12 @@ function CheckinPage() {
   const [message, setMessage] = useState("");
 
   const fakePatientData = {
-    id: "BN001",
-    name: "Nguyễn Văn A",
+    userId: "BN001",
+    fullName: "Nguyễn Văn A",
     gender: "Nam",
     birthDate: "1985-07-15",
     phone: "0912345678",
+    address: "123 Đường ABC, Quận 1, TP.HCM",
   };
 
   const handleSearch = () => {
@@ -30,90 +34,104 @@ function CheckinPage() {
       setMessage("");
     } else {
       setPatient(null);
-      setMessage("Không tìm thấy bệnh nhân.");
+      setMessage("Not found patient! Please check again.");
     }
   };
 
   const handleCheckIn = () => {
     if (!reason) {
-      setMessage("Vui lòng nhập lý do khám.");
+      setMessage("Please enter the reason.");
       return;
     }
 
-    setMessage("Check-in thành công!");
+    setMessage("Check-in successfully!");
     setPatient(null);
     setPatientId("");
     setReason("");
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        Check-in Khám HIV
-      </Typography>
+    <div className="checkin-container">
+      <Header />
+      <div className="checkin-content">
+        <div className="checkin-head">
+          <Typography
+            variant="h4"
+            gutterBottom
+            align="center"
+            className="checkin-title"
+          >
+            Check In Patient
+          </Typography>
+          <Box display="flex" gap={2} mb={3} className="checkin-search-box">
+            <TextField
+              label="Patient Code"
+              variant="outlined"
+              fullWidth
+              value={patientId}
+              onChange={(e) => setPatientId(e.target.value)}
+              // style={{ backgroundColor: "#fff" }}
+            />
+            <Button variant="contained" color="primary" onClick={handleSearch}>
+              Search
+            </Button>
+          </Box>
+        </div>
+        <div className="checkin-description">
+          {patient && (
+            <Card sx={{ mb: 3 }} className="patient-info-card">
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Patient Information
+                </Typography>
+                <Typography>Patient ID: {patient.userId}</Typography>
+                <Typography>Full name: {patient.fullName}</Typography>
+                <Typography>Gender: {patient.gender}</Typography>
+                <Typography>Date of birth: {patient.birthDate}</Typography>
+                <Typography>Phone Number: {patient.phone}</Typography>
+                <Typography>Address: {patient.address}</Typography>
+              </CardContent>
+            </Card>
+          )}
 
-      <Box display="flex" gap={2} mb={3}>
-        <TextField
-          label="Mã bệnh nhân"
-          variant="outlined"
-          fullWidth
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-        />
-        <Button variant="contained" color="primary" onClick={handleSearch}>
-          Tìm
-        </Button>
-      </Box>
+          {patient && (
+            <Box mb={3}>
+              <TextField
+                label="Reason"
+                multiline
+                minRows={3}
+                fullWidth
+                variant="outlined"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </Box>
+          )}
 
-      {patient && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Thông tin bệnh nhân
-            </Typography>
-            <Typography>Mã: {patient.id}</Typography>
-            <Typography>Tên: {patient.name}</Typography>
-            <Typography>Giới tính: {patient.gender}</Typography>
-            <Typography>Ngày sinh: {patient.birthDate}</Typography>
-            <Typography>SĐT: {patient.phone}</Typography>
-          </CardContent>
-        </Card>
-      )}
+          {patient && (
+            <Button
+              variant="contained"
+              color="success"
+              fullWidth
+              onClick={handleCheckIn}
+            >
+              Confirm
+            </Button>
+          )}
 
-      {patient && (
-        <Box mb={3}>
-          <TextField
-            label="Lý do khám"
-            multiline
-            minRows={3}
-            fullWidth
-            variant="outlined"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          />
-        </Box>
-      )}
+          {message && (
+            <Alert
+              severity={message.includes("Success") ? "success" : "error"}
+              sx={{ mt: 3 }}
+            >
+              {message}
+            </Alert>
+          )}
+        </div>
+      </div>
 
-      {patient && (
-        <Button
-          variant="contained"
-          color="success"
-          fullWidth
-          onClick={handleCheckIn}
-        >
-          Xác nhận Check-in
-        </Button>
-      )}
-
-      {message && (
-        <Alert
-          severity={message.includes("thành công") ? "success" : "error"}
-          sx={{ mt: 3 }}
-        >
-          {message}
-        </Alert>
-      )}
-    </Container>
+      <Footer />
+    </div>
   );
 }
 
