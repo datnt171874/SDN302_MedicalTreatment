@@ -17,6 +17,7 @@ import HeaderDoctor from "./components/HeaderDoctor";
 import DoctorPatients from "./pages/doctor/DoctorPatients";
 import DoctorPatientDetail from "./pages/doctor/DoctorPatientDetail";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
+import DoctorTreatmentPlan from "./pages/doctor/DoctorTreatmentPlan";
 
 function App() {
   const location = useLocation();
@@ -43,8 +44,8 @@ function App() {
         <Route path="/doctor/patients" element={<DoctorPatients/>} />
         <Route path="/doctor/patient/:id" element={<DoctorPatientDetail/>} />
         <Route path="/doctor/appointments" element={<DoctorAppointments/>} />
-        {/*<Route path="/doctor/treatments" element={<TreatmentPlanDoctor />} />
-        <Route path="/doctor/reminders" element={<DoctorReminders />} />
+       <Route path="/doctor/treatments" element={<DoctorTreatmentPlan/>} />
+         {/*<Route path="/doctor/reminders" element={<DoctorReminders />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} /> */}
       </Routes>
     </>
