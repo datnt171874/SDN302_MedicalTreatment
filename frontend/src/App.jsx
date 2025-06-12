@@ -8,6 +8,8 @@ import AdminPanel from "./pages/AdminPanel";
 import DoctorPage from "./pages/DoctorPage";
 import User from "./pages/User";
 import Header from "./components/Header";
+import TreatmentPlanUser from "./pages/TreatmentPlanUser";
+import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 
 function App() {
   const location = useLocation(); // Get current location
@@ -23,6 +25,8 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/doctor" element={<DoctorPage />} />
         <Route path="/user" element={<User />} />
+        <Route path="/treatmentUser" element={<TreatmentPlanUser/>} />
+        <Route path="/treatmentDoctor" element={<TreatmentPlanDoctor/>} />
 
       </Routes>
     </>
