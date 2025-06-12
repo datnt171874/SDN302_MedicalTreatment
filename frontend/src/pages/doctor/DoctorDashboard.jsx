@@ -1,71 +1,54 @@
 import React from 'react';
-import { Grid, Card, CardContent, Typography, Button } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import GroupIcon from '@mui/icons-material/Group';
-import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
-import { useNavigate } from 'react-router-dom';
+import { Box, Grid, Paper, Typography, Button } from '@mui/material';
+import { People, Event, Notifications } from '@mui/icons-material';
+import HeaderDoctor from '../../components/HeaderDoctor';
+
 
 const DoctorDashboard = () => {
-  const navigate = useNavigate();
-
-  // Fake data - replace with real data from API or context
-  const totalPatients = 12;
-  const todaysAppointments = 5;
-  const importantReminders = 3;
-
   return (
-    <Grid container spacing={3} p={4}>
-      {/* Tổng số bệnh nhân */}
-      <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ bgcolor: '#f0f4f3' }}>
-          <CardContent>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              <GroupIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Bệnh nhân đang điều trị
-            </Typography>
-            <Typography variant="h4" fontWeight="bold">
-              {totalPatients}
-            </Typography>
-            <Button variant="text" onClick={() => navigate('/doctor/patients')}>
-              Xem danh sách
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      <HeaderDoctor/>
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Trang tổng quan của bác sĩ
+        </Typography>
 
-      {/* Cuộc hẹn hôm nay */}
-      <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ bgcolor: '#e8f0fe' }}>
-          <CardContent>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              <CalendarTodayIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Cuộc hẹn hôm nay
-            </Typography>
-            <Typography variant="h4" fontWeight="bold">
-              {todaysAppointments}
-            </Typography>
-            <Button variant="text" onClick={() => navigate('/doctor/appointments')}>
-              Xem lịch hẹn
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#e8f5e9' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <People color="action" />
+                <Typography variant="h6" fontWeight={600}>Bệnh nhân đang điều trị</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>12</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem danh sách</Button>
+            </Paper>
+          </Grid>
 
-      {/* Nhắc nhở quan trọng */}
-      <Grid item xs={12} sm={6} md={4}>
-        <Card sx={{ bgcolor: '#fff3e0' }}>
-          <CardContent>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              <NotificationImportantIcon sx={{ verticalAlign: 'middle', mr: 1 }} /> Nhắc nhở quan trọng
-            </Typography>
-            <Typography variant="h4" fontWeight="bold">
-              {importantReminders}
-            </Typography>
-            <Button variant="text" onClick={() => navigate('/doctor/reminders')}>
-              Xem chi tiết
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#e3f2fd' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Event color="action" />
+                <Typography variant="h6" fontWeight={600}>Cuộc hẹn hôm nay</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>5</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem lịch hẹn</Button>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#fff8e1' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Notifications color="action" />
+                <Typography variant="h6" fontWeight={600}>Nhắc nhở quan trọng</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>3</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem chi tiết</Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 

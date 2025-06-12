@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, IconButton, Box, Button, Menu, MenuItem } 
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 
-const Header_Doctor = () => {
+const HeaderDoctor = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -67,4 +67,4 @@ const Header_Doctor = () => {
   );
 };
 
-export default Header_Doctor;
+export default HeaderDoctor;

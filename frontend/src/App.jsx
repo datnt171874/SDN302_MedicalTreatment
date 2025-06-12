@@ -8,10 +8,12 @@ import AdminPanel from "./pages/AdminPanel";
 import DoctorPage from "./pages/DoctorPage";
 import User from "./pages/User";
 import Header from "./components/Header";
+
 import TreatmentPlanUser from "./pages/TreatmentPlanUser";
 import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import HeaderDoctor from "./components/HeaderDoctor";
 
 // Doctor Pages
 
@@ -33,7 +35,8 @@ function App() {
         <Route path="/treatmentUser" element={<TreatmentPlanUser />} />
         <Route path="/treatmentDoctor" element={<TreatmentPlanDoctor />} />
 
-        Doctor routes
+    
+        {location.pathname == '/doctor' && <HeaderDoctor/>}
         <Route path="/doctor/dashboard" element={<DoctorDashboard/>} /> 
 {/* 
         <Route path="/doctor/patients" element={<DoctorPatients />} />
