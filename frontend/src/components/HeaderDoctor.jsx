@@ -18,6 +18,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -40,6 +41,7 @@ const HeaderDoctor = () => {
     { text: 'Lịch hẹn của tôi', path: '/doctor/appointments', icon: <EventNoteIcon /> },
     { text: 'Lời nhắc', path: '/doctor/reminders', icon: <NotificationsActiveIcon /> },
     { text: 'Hồ sơ bác sĩ', path: '/doctor/profile', icon: <AccountCircleIcon /> },
+    { text: 'Đăng xuất' , path:'/', icon: <LogoutIcon/>}
   ];
 
   return (
