@@ -18,14 +18,16 @@ import DoctorPatients from "./pages/doctor/DoctorPatients";
 import DoctorPatientDetail from "./pages/doctor/DoctorPatientDetail";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import DoctorTreatmentPlan from "./pages/doctor/DoctorTreatmentPlan";
+import DoctorReminders from "./pages/doctor/DoctorReminders";
+import DoctorProfile from "./pages/doctor/DoctorProfile";
 
 function App() {
   const location = useLocation();
-  const isDoctorRoute = location.pathname.startsWith('/doctor');
+  const isDoctorRoute = location.pathname.startsWith("/doctor");
 
   return (
     <>
-      {!isDoctorRoute && location.pathname !== '/user' && <Header />}
+      {!isDoctorRoute && location.pathname !== "/user" && <Header />}
       {isDoctorRoute && <HeaderDoctor />}
 
       <Routes>
@@ -41,12 +43,12 @@ function App() {
 
         {/* Doctor Routes */}
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-        <Route path="/doctor/patients" element={<DoctorPatients/>} />
-        <Route path="/doctor/patient/:id" element={<DoctorPatientDetail/>} />
-        <Route path="/doctor/appointments" element={<DoctorAppointments/>} />
-       <Route path="/doctor/treatments" element={<DoctorTreatmentPlan/>} />
-         {/*<Route path="/doctor/reminders" element={<DoctorReminders />} />
-        <Route path="/doctor/profile" element={<DoctorProfile />} /> */}
+        <Route path="/doctor/patients" element={<DoctorPatients />} />
+        <Route path="/doctor/patient/:id" element={<DoctorPatientDetail />} />
+        <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+        <Route path="/doctor/treatments" element={<DoctorTreatmentPlan />} />
+        <Route path="/doctor/reminders" element={<DoctorReminders/>} />
+        <Route path="/doctor/profile" element={<DoctorProfile/>} /> 
       </Routes>
     </>
   );
