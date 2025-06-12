@@ -4,84 +4,101 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const authController = {
-    // registerController: async (req, res) => {
-    //     try {
-    //         console.log("Received at backend:", req.body);
-    //         console.log("Fields received:", { userName, password, email});
-    //         const { userName, password, email} = req.body
-    //         if (!userName || !password || !email) {
-    //             return res.status(400).json({
-    //                 error: "Missing required fields",
-    //                 required: ["userName", "password", "email"]
-    //             })
-    //         }
-    //         const existingUser = await User.findOne({ userName });
-    //         if (existingUser) {
-    //             return res.status(400).json({error: "Username already exists"});
-    //         }
-    //         const salt = await bcrypt.genSalt(10)
-    //         const hashedPassword = await bcrypt.hash(password, salt);
-
-    //         const newUser = new User({
-    //             userName,
-    //             password: hashedPassword,
-    //             email,
-    //             roleName: "Customer"
-    //         })
-    //         const user = await newUser.save();
-    //         res.status(201).json(user)
-    //     } catch (error) {
-    //         console.error("Register error:", error);
-    //         if (error.code === 11000) {
-    //             return res.status(400).json({
-    //                 error: "Username already exists"
-    //             })
-    //         }
-    //         res.status(500).json({
-    //             error: "Internal server error",
-    //             message: error.message
-    //         })
-    //     }
-    // },
     registerController: async (req, res) => {
-    try {
-        const { userName, password, email} = req.body;
+        try {
+            const { userName, password, email, roleName, doctorDetails, fullName, phone, address } = req.body;
 
-        console.log("Received at backend:", { userName, password, email });
+            console.log("Received at backend:", { userName, password, email, roleName, doctorDetails, fullName, phone, address });
 
-        if ([userName, password, email].some(field => !field?.trim())) {
-            return res.status(400).json({
-                error: "Missing required fields",
-                required: ["userName", "password", "email"]
+            if ([userName, password, email].some(field => !field?.trim())) {
+                return res.status(400).json({
+                    error: "Missing required fields",
+                    required: ["userName", "password", "email"]
+                });
+            }
+
+            const existingUser = await User.findOne({ userName });
+            if (existingUser) {
+                return res.status(400).json({ error: "Username already exists" });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            let finalRoleName = roleName || "Customer";
+            if (!roleName && email.includes("@admin.com")) {
+                finalRoleName = "Admin";
+            } else if (!roleName && email.includes("@doctor.com")) {
+                finalRoleName = "Doctor";
+            } else if (!roleName && email.includes("@user.com")) {
+                finalRoleName = "Customer";
+            }
+            const newUser = new User({
+                userName,
+                password: hashedPassword,
+                email,
+                roleName: finalRoleName,
+                fullName,
+                phone, 
+                address
+            });
+
+            const savedUser = await newUser.save();
+
+            if (finalRoleName === "Doctor") {
+                const doctorData = {
+                    userId: savedUser._id,
+                    certificates: doctorDetails?.certificates || [],
+                    experiences: doctorDetails?.experiences || [],
+                    skills: doctorDetails?.skills || [],
+                    workSchedule: doctorDetails?.workSchedule || { days: [], hours: { start: "", end: "" } }
+                };
+
+                if (doctorData.certificates) {
+                    doctorData.certificates = doctorData.certificates.map(cert => ({
+                        name: cert.name || '',
+                        issuedBy: cert.issuedBy || '',
+                        date: cert.date ? new Date(cert.date) : new Date()
+                    }));
+                }
+
+                if (doctorData.experiences) {
+                    doctorData.experiences = doctorData.experiences.map(exp => ({
+                        position: exp.position || '',
+                        organization: exp.organization || '',
+                        startDate: exp.startDate ? new Date(exp.startDate) : new Date(),
+                        endDate: exp.endDate ? new Date(exp.endDate) : null
+                    }));
+                }
+
+                if (doctorData.skills) {
+                    doctorData.skills = doctorData.skills.map(skill => ({
+                        name: skill.name || '',
+                        level: skill.level || ''
+                    }));
+                }
+
+                const doctor = new Doctor(doctorData);
+                await doctor.save();
+            }
+            res.status(201).json({
+                userId: savedUser._id,
+                userName: savedUser.userName,
+                email: savedUser.email,
+                roleName: savedUser.roleName,
+                fullName: savedUser.fullName,
+                phone: savedUser.phone,
+                address: savedUser.address,
+                message: "User registered successfully"
+            });
+        } catch (error) {
+            console.error("Register error:", error);
+            res.status(500).json({
+                error: "Internal server error",
+                message: error.message
             });
         }
-
-        const existingUser = await User.findOne({ userName });
-        if (existingUser) {
-            return res.status(400).json({ error: "Username already exists" });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const newUser = new User({
-            userName, 
-            password: hashedPassword,
-            email,
-            roleName: "Customer" 
-        });
-
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-
-    } catch (error) {
-        console.error("Register error:", error);
-        res.status(500).json({
-            error: "Internal server error",
-            message: error.message
-        });
-    }
-},
+    },
 
     loginController: async (req, res) => {
         try {
@@ -119,7 +136,7 @@ const authController = {
             );
 
             res.status(200).json({
-                id: user._id,
+                userId: user._id,
                 userName: user.userName,
                 email: user.email,
                 fullName: user.fullName,
@@ -148,14 +165,14 @@ const authController = {
             });
         }
     },
-    
+
     deleteUserController: async (req, res) => {
         try {
             const userId = req.params.id;
             console.log("DELETE userId:", req.params.id);
 
             if (!userId) {
-            return res.status(400).json({ error: "Invalid user ID" });
+                return res.status(400).json({ error: "Invalid user ID" });
             }
             const user = await User.findByIdAndDelete(userId);
             if (!user) {
@@ -168,7 +185,7 @@ const authController = {
             res.status(500).json({
                 error: "Internal server error",
                 message: error.message
-            }); 
+            });
         }
     },
 
@@ -208,28 +225,28 @@ const authController = {
 
     loginDoctorController: async (req, res) => {
         try {
-            const {userName, password} = req.body;
+            const { userName, password } = req.body;
 
-            const user = await Doctor.findOne({ userName, roleName: "Doctor"});
-            if(!user){
-                res.status(401).json({message: "Invalid credentials"});
+            const user = await Doctor.findOne({ userName, roleName: "Doctor" });
+            if (!user) {
+                res.status(401).json({ message: "Invalid credentials" });
             }
 
             const isMatch = await bcrypt.compare(password, user.password);
-            if(!isMatch){
-                res.status(401).json({message: "Wrong password"})
+            if (!isMatch) {
+                res.status(401).json({ message: "Wrong password" })
             }
 
             const token = jwt.sign({
                 userId: user._id,
                 roleName: user.roleName
             },
-            process.env.JWT_SECRET,
-            {expiresIn: '24h'}
-        );
-        res.status(200).json({message: "Doctor Login Successfully", token, user: {userId: user._id, roleName: user.roleName, userName: user.userName}});
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+            res.status(200).json({ message: "Doctor Login Successfully", token, user: { userId: user._id, roleName: user.roleName, userName: user.userName } });
         } catch (error) {
-            res.status(500).json({message: "Error logining doctor", error: error.message});
+            res.status(500).json({ message: "Error logining doctor", error: error.message });
         }
     },
 }

@@ -31,6 +31,6 @@ app.use(cookieParser())
 
 app.use("/api/auth", authRoute)
 app.use("/api/appointment", appointmentRoute)
-app.use("/api/doctor", doctorRoute)
+app.use("/api/doctors", doctorRoute)
 
 
