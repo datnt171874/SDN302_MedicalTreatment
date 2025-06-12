@@ -12,12 +12,7 @@ import TreatmentPlanUser from "./pages/TreatmentPlanUser";
 import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 
 // Doctor Pages
-import DoctorDashboard from "./pages/doctor/DoctorDashboard";
-import DoctorPatients from "./pages/doctor/DoctorPatients";
-import DoctorPatientDetail from "./pages/doctor/DoctorPatientDetail";
-import DoctorAppointments from "./pages/doctor/DoctorAppointments";
-import DoctorReminders from "./pages/doctor/DoctorReminders";
-import DoctorProfile from "./pages/doctor/DoctorProfile";
+
 
 function App() {
   const location = useLocation();
