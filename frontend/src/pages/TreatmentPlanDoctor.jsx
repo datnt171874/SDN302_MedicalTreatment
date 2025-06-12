@@ -1,24 +1,73 @@
 import React from 'react';
-import { Box, Container, Grid, Typography, List, ListItem, Select, MenuItem, Button, TextField, Paper } from '@mui/material';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Select,
+  MenuItem,
+  Button,
+  TextField,
+  Paper,
+} from '@mui/material';
+
+import PeopleIcon from '@mui/icons-material/People';
+import DescriptionIcon from '@mui/icons-material/Description';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 import Footer from '../components/Footer';
-
-
 
 const TreatmentPlanDoctor = () => {
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column" bgcolor="#EAE7D6">
-
       <Grid container spacing={2} padding={3} flex={1}>
         {/* Sidebar */}
         <Grid item xs={12} md={3}>
           <Box bgcolor="#5D786F" color="white" p={2} borderRadius={2}>
             <Typography variant="h6" gutterBottom>
-              Menu
+              Menu Bác Sĩ
             </Typography>
             <List>
-              <ListItem>Danh sách bệnh nhân</ListItem>
-              <ListItem>Tạo phác đồ</ListItem>
-              <ListItem>Lịch hẹn</ListItem>
+              <ListItem button>
+                <ListItemIcon sx={{ color: 'white' }}>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Quản lý bệnh nhân" />
+              </ListItem>
+
+              <ListItem button>
+                <ListItemIcon sx={{ color: 'white' }}>
+                  <DescriptionIcon />
+                </ListItemIcon>
+                <ListItemText primary="Hồ sơ điều trị" />
+              </ListItem>
+
+              <ListItem button>
+                <ListItemIcon sx={{ color: 'white' }}>
+                  <CalendarMonthIcon />
+                </ListItemIcon>
+                <ListItemText primary="Lịch hẹn của tôi" />
+              </ListItem>
+
+              <ListItem button>
+                <ListItemIcon sx={{ color: 'white' }}>
+                  <NotificationsActiveIcon />
+                </ListItemIcon>
+                <ListItemText primary="Gửi lời nhắc" />
+              </ListItem>
+
+              <ListItem button>
+                <ListItemIcon sx={{ color: 'white' }}>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Hồ sơ cá nhân bác sĩ" />
+              </ListItem>
             </List>
           </Box>
         </Grid>
@@ -55,13 +104,7 @@ const TreatmentPlanDoctor = () => {
               <Typography variant="h6" gutterBottom>
                 Ghi chú Chuyên môn
               </Typography>
-              <TextField
-                multiline
-                rows={4}
-                fullWidth
-                placeholder="Ghi chú..."
-                sx={{ mb: 2 }}
-              />
+              <TextField multiline rows={4} fullWidth placeholder="Ghi chú..." sx={{ mb: 2 }} />
               <Button variant="contained" sx={{ bgcolor: '#5D786F', '&:hover': { bgcolor: '#4a655e' } }}>
                 Lưu
               </Button>
@@ -70,7 +113,7 @@ const TreatmentPlanDoctor = () => {
         </Grid>
       </Grid>
 
-      <Footer/>
+      <Footer />
     </Box>
   );
 };
