@@ -11,7 +11,8 @@ import {
   TextField,
   InputAdornment,
   Avatar,
-  IconButton
+  IconButton,
+  LinearProgress
 } from '@mui/material';
 import {
   MedicalInformation as MedicalIcon,
@@ -20,173 +21,265 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
   Visibility as VisibilityIcon,
-  MoreVert as MoreVertIcon
+  MoreVert as MoreVertIcon,
+  TrendingUp as TrendingUpIcon,
+  Payment as PaymentIcon
 } from '@mui/icons-material';
 
 function Dashboard() {
   return (
-    <Box>
-      <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 4 }}>
-        <Grid item>
-          <Typography variant="h4" gutterBottom>
-            Good Morning, User!
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Welcome to your Medical Treatment dashboard.
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Search..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Button variant="contained" startIcon={<AddIcon />}>
-              New Appointment
-            </Button>
-            <Button variant="outlined" startIcon={<VisibilityIcon />}>
-              View Records
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        {/* Main Content Area - mimicking the image layout */}
-        <Grid item xs={12} md={7}>
-          {/* Creating Polished Invoices Effortlessly - Placeholder */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Effortless Health Management
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Efficiently manage your medical appointments, records, and communications.
-              </Typography>
-              <Button variant="contained" color="primary">
-                Learn More
+    <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: '#f8f9fa', minHeight: '100vh' }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+        {/* Header */}
+        <Grid container alignItems="center" justifyContent="space-between" sx={{ mb: 4 }}>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#333', mb: 1 }}>
+              Good morning, User!
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Welcome to your medical management dashboard.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', justifyContent: { xs: 'flex-start', md: 'flex-end' }, mt: { xs: 2, md: 0 } }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Search..."
+                sx={{ minWidth: 200 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button 
+                variant="contained" 
+                startIcon={<AddIcon />}
+                sx={{ backgroundColor: '#4A6D5A', '&:hover': { backgroundColor: '#3A5C4B' } }}
+              >
+                Book Appointment
               </Button>
-            </CardContent>
-          </Card>
+            </Box>
+          </Grid>
+        </Grid>
 
-          {/* Overview Cards - Similar to the current setup */}
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardHeader
-                  avatar={<CalendarIcon color="primary" />}
-                  title="Upcoming Appointments"
-                />
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    2
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Appointments this week
-                  </Typography>
-                </CardContent>
-              </Card>
+        <Grid container spacing={3}>
+          {/* Main Content Area */}
+          <Grid item xs={12} lg={8}>
+            {/* Welcome Card */}
+            <Card sx={{ mb: 3, boxShadow: 2 }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#4A6D5A' }}>
+                  Efficient Health Management
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                  Effectively manage your medical appointments, health records, and communicate with your doctors.
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  sx={{ backgroundColor: '#4A6D5A', '&:hover': { backgroundColor: '#3A5C4B' } }}
+                >
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Stats Cards */}
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
+                  <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                      <CalendarIcon sx={{ fontSize: 40, color: '#4A6D5A' }} />
+                    </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#333', mb: 1 }}>
+                      2
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      Upcoming Appointments
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      This Week
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
+                  <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                      <MedicalIcon sx={{ fontSize: 40, color: '#4A6D5A' }} />
+                    </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#333', mb: 1 }}>
+                      5
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      Medical Records
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Recent Examinations
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card sx={{ boxShadow: 2, '&:hover': { boxShadow: 4 } }}>
+                  <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                      <ChatIcon sx={{ fontSize: 40, color: '#4A6D5A' }} />
+                    </Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: '#333', mb: 1 }}>
+                      3
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                      New Messages
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Unread
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardHeader
-                  avatar={<MedicalIcon color="primary" />}
-                  title="Medical Records"
+
+            {/* Health Budget Card */}
+            <Card sx={{ boxShadow: 2 }}>
+              <CardHeader 
+                title="Health Budget" 
+                action={<IconButton><MoreVertIcon /></IconButton>}
+                titleTypographyProps={{ fontWeight: 600 }}
+              />
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 2 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    1.567.000₫ / 5.000.000₫
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    31.3% used
+                  </Typography>
+                </Box>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={31.3} 
+                  sx={{ 
+                    height: 8, 
+                    borderRadius: 4,
+                    bgcolor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': {
+                      bgcolor: '#4A6D5A'
+                    }
+                  }} 
                 />
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    5
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Recent visits
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardHeader
-                  avatar={<ChatIcon color="primary" />}
-                  title="New Messages"
-                />
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    3
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Unread messages
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Annual Health Budget
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
 
-          {/* Spendings - Placeholder */}
-          <Card>
-            <CardHeader title="Health Spendings" action={<IconButton><MoreVertIcon /></IconButton>} />
-            <CardContent>
-              <Typography variant="h6">$1,567 / $5,000</Typography>
-              <Typography color="text.secondary">Annual Health Budget</Typography>
-              {/* Add a progress bar here if needed */}
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Right Column - Charts and Quick Transfer */}
-        <Grid item xs={12} md={5}>
-          {/* Total Revenue - Placeholder for a chart */}
-          <Card sx={{ mb: 3 }}>
-            <CardHeader title="Total Health Expenses" action={<IconButton><MoreVertIcon /></IconButton>} />
-            <CardContent>
-              <Typography variant="h5">$4,592.34</Typography>
-              <Typography color="text.secondary">+0.89% than last week</Typography>
-              <Box sx={{ height: 200, bgcolor: 'grey.200', borderRadius: 1 }} /> {/* Placeholder for chart */}
-            </CardContent>
-          </Card>
-
-          {/* Withdrawn - Placeholder */}
-          <Card sx={{ mb: 3 }}>
-            <CardHeader title="Payments Made" action={<IconButton><MoreVertIcon /></IconButton>} />
-            <CardContent>
-              <Typography variant="h6">4,583</Typography>
-              <Typography color="text.secondary">+1.2% than last week</Typography>
-              {/* Add a small chart or progress here */}
-            </CardContent>
-          </Card>
-
-          {/* Quick Transfer - Placeholder */}
-          <Card>
-            <CardHeader title="Quick Contact" action={<IconButton><MoreVertIcon /></IconButton>} />
-            <CardContent>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Contact a medical professional.
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
-                <Avatar src="" />
-                <Box>
-                  <Typography variant="subtitle1">Dr. John Doe</Typography>
-                  <Typography variant="body2" color="text.secondary">Cardiologist</Typography>
+          {/* Right Sidebar */}
+          <Grid item xs={12} lg={4}>
+            {/* Health Expenses */}
+            <Card sx={{ mb: 3, boxShadow: 2 }}>
+              <CardHeader 
+                title="Medical Expenses" 
+                action={<IconButton><MoreVertIcon /></IconButton>}
+                titleTypographyProps={{ fontWeight: 600 }}
+              />
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    4.592.340₫
+                  </Typography>
+                  <TrendingUpIcon sx={{ color: '#4caf50', fontSize: 20 }} />
                 </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Avatar src="" />
-                <Box>
-                  <Typography variant="subtitle1">Nurse Jane Smith</Typography>
-                  <Typography variant="body2" color="text.secondary">General Nurse</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  +0.89% compared to last week
+                </Typography>
+                <Box sx={{ 
+                  height: 120, 
+                  bgcolor: '#f5f5f5', 
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Expense Chart
+                  </Typography>
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Payments Made */}
+            <Card sx={{ mb: 3, boxShadow: 2 }}>
+              <CardHeader 
+                title="Payments Made" 
+                action={<IconButton><MoreVertIcon /></IconButton>}
+                titleTypographyProps={{ fontWeight: 600 }}
+              />
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <PaymentIcon sx={{ color: '#4A6D5A' }} />
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      4,583
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      +1.2% compared to last week
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+
+            {/* Quick Contact */}
+            <Card sx={{ boxShadow: 2 }}>
+              <CardHeader 
+                title="Quick Contact" 
+                action={<IconButton><MoreVertIcon /></IconButton>}
+                titleTypographyProps={{ fontWeight: 600 }}
+              />
+              <CardContent>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Contact medical professionals.
+                </Typography>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
+                  <Avatar sx={{ bgcolor: '#4A6D5A' }}>
+                    Dr
+                  </Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      Dr. John Doe
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Cardiologist
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}>
+                  <Avatar sx={{ bgcolor: '#4A6D5A' }}>
+                    NS
+                  </Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      Nurse Jane Smith
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      General Nurse
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Box>
   );
 }

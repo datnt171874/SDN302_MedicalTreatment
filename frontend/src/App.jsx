@@ -10,6 +10,12 @@ import UserDashboard from "./pages/UserDashboard";
 import Dashboard from "./pages/Dashboard";
 import Header from "./components/Header";
 import { Box } from "@mui/material";
+import UpcomingAppointments from "./pages/UpcomingAppointments";
+import MedicalRecords from "./pages/MedicalRecords";
+import BookAppointment from "./pages/BookAppointment";
+import MessagesComments from "./pages/MessagesComments";
+import Account from "./pages/Account";
+
 
 function App() {
   const location = useLocation(); // Get current location
@@ -26,12 +32,15 @@ function App() {
         <Route path="/doctor" element={<DoctorPage />} />
         
         {/* User Dashboard Routes */}
-        <Route path="/user" element={<UserDashboard><Dashboard /></UserDashboard>} />
-        <Route path="/user/dashboard" element={<UserDashboard><Dashboard /></UserDashboard>} />
-        <Route path="/user/medical-records" element={<UserDashboard><div>Medical Records</div></UserDashboard>} />
-        <Route path="/user/appointments" element={<UserDashboard><div>Book Appointment</div></UserDashboard>} />
-        <Route path="/user/messages" element={<UserDashboard><div>Messages & Comments</div></UserDashboard>} />
-        <Route path="/user/profile" element={<UserDashboard><div>Account</div></UserDashboard>} />
+        <Route path="/user" element={<UserDashboard />}>
+          <Route index element={<Dashboard />} /> {/* Default child route for /user */}
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="medical-records" element={<MedicalRecords />} />
+          <Route path="appointments" element={<BookAppointment />} />
+          <Route path="upcoming-appointments" element={<UpcomingAppointments />} />
+          <Route path="messages" element={<MessagesComments />} />
+          <Route path="profile" element={<Account />} />
+        </Route>
       </Routes>
     </Box>
   );
