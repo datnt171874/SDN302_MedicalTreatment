@@ -1,13 +1,11 @@
 import React from 'react';
 import { Box, Grid, Paper, Typography, Button } from '@mui/material';
 import { People, Event, Notifications } from '@mui/icons-material';
-import HeaderDoctor from '../../components/HeaderDoctor';
 
 
 const DoctorDashboard = () => {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
-      <HeaderDoctor/>
       <Box sx={{ p: 4 }}>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Trang tổng quan của bác sĩ
