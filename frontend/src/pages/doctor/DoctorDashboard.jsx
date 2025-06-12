@@ -1,0 +1,53 @@
+import React from 'react';
+import { Box, Grid, Paper, Typography, Button } from '@mui/material';
+import { People, Event, Notifications } from '@mui/icons-material';
+
+
+const DoctorDashboard = () => {
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom color='black'>
+          Trang tổng quan của bác sĩ
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#e8f5e9' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <People color="action" />
+                <Typography variant="h6" fontWeight={600}>Bệnh nhân đang điều trị</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>12</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem danh sách</Button>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#e3f2fd' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Event color="action" />
+                <Typography variant="h6" fontWeight={600}>Cuộc hẹn hôm nay</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>5</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem lịch hẹn</Button>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ p: 3, bgcolor: '#fff8e1' }}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Notifications color="action" />
+                <Typography variant="h6" fontWeight={600}>Nhắc nhở quan trọng</Typography>
+              </Box>
+              <Typography variant="h4" sx={{ mt: 2 }}>3</Typography>
+              <Button variant="text" sx={{ mt: 1 }}>Xem chi tiết</Button>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
+  );
+};
+
+export default DoctorDashboard;

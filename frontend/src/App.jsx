@@ -6,43 +6,67 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AdminPanel from "./pages/AdminPanel";
 import DoctorPage from "./pages/DoctorPage";
-import UserDashboard from "./pages/UserDashboard";
-import Dashboard from "./pages/Dashboard";
 import Header from "./components/Header";
 import { Box } from "@mui/material";
-import UpcomingAppointments from "./pages/UpcomingAppointments";
+import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import HeaderDoctor from "./components/HeaderDoctor";
+import DoctorPatients from "./pages/doctor/DoctorPatients";
+import DoctorPatientDetail from "./pages/doctor/DoctorPatientDetail";
+import DoctorAppointments from "./pages/doctor/DoctorAppointments";
+import DoctorTreatmentPlan from "./pages/doctor/DoctorTreatmentPlan";
+import DoctorReminders from "./pages/doctor/DoctorReminders";
+import DoctorProfile from "./pages/doctor/DoctorProfile";
+import UserDashboard from "./pages/UserDashboard";
+import Dashboard from "./pages/Dashboard";
 import MedicalRecords from "./pages/MedicalRecords";
 import BookAppointment from "./pages/BookAppointment";
+import UpcomingAppointments from "./pages/UpcomingAppointments";
 import MessagesComments from "./pages/MessagesComments";
 import Account from "./pages/Account";
-
+import TreatmentPlanUser from "./pages/TreatmentPlanUser";
+import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 
 function App() {
-  const location = useLocation(); // Get current location
+  const location = useLocation();
+  const isDoctorRoute = location.pathname.startsWith("/doctor");
 
   return (
-    <Box sx={{ backgroundColor: '#EAE7D6', minHeight: '100vh' }}>
-      {!location.pathname.startsWith('/user') && <Header />} {/* Conditionally render Header */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/checkin" element={<CheckinPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/doctor" element={<DoctorPage />} />
-        
-        {/* User Dashboard Routes */}
-        <Route path="/user" element={<UserDashboard />}>
-          <Route index element={<Dashboard />} /> {/* Default child route for /user */}
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="medical-records" element={<MedicalRecords />} />
-          <Route path="appointments" element={<BookAppointment />} />
-          <Route path="upcoming-appointments" element={<UpcomingAppointments />} />
-          <Route path="messages" element={<MessagesComments />} />
-          <Route path="profile" element={<Account />} />
-        </Route>
-      </Routes>
-    </Box>
+    <>
+      <Box sx={{ backgroundColor: "#EAE7D6", minHeight: "100vh" }}>
+        {!location.pathname.startsWith("/user") && !location.pathname.startsWith("/doctor") && <Header />}
+        {location.pathname.startsWith("/doctor") && <HeaderDoctor />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/checkin" element={<CheckinPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/doctor" element={<DoctorPage />} />
+
+          {/* User Dashboard Routes */}
+          <Route path="/user" element={<UserDashboard />}>
+            <Route index element={<Dashboard />} /> {/* Default child route for /user */}
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="medical-records" element={<MedicalRecords />} />
+            <Route path="appointments" element={<BookAppointment />} />
+            <Route path="upcoming-appointments" element={<UpcomingAppointments />} />
+            <Route path="messages" element={<MessagesComments />} />
+            <Route path="profile" element={<Account />} />
+            <Route path="treatmentUser" element={<TreatmentPlanUser />} /> {/* Changed from /treatmentUser to user/treatmentUser */}
+            <Route path="treatmentDoctor" element={<TreatmentPlanDoctor />} /> {/* Changed from /treatmentDoctor to user/treatmentDoctor */}
+          </Route>
+
+          {/* Doctor Routes */}
+          <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
+          <Route path="/doctor/patients" element={<DoctorPatients />} />
+          <Route path="/doctor/patient/:id" element={<DoctorPatientDetail />} />
+          <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+          <Route path="/doctor/treatments" element={<DoctorTreatmentPlan />} />
+          <Route path="/doctor/reminders" element={<DoctorReminders />} />
+          <Route path="/doctor/profile" element={<DoctorProfile />} />
+        </Routes>
+      </Box>
+    </>
   );
 }
 
