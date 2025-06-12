@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Container, Grid, Typography, List, ListItem, Select, MenuItem, Button, TextField, Paper } from '@mui/material';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 
@@ -8,7 +7,6 @@ import Footer from '../components/Footer';
 const TreatmentPlanDoctor = () => {
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column" bgcolor="#EAE7D6">
-      <Header/>
 
       <Grid container spacing={2} padding={3} flex={1}>
         {/* Sidebar */}
