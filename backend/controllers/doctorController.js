@@ -52,6 +52,17 @@ const getDoctorById = async (req, res) => {
     res.status(500).json({ message: "Error fetching doctor", error: error.message });
   }
 }
+const getDoctorByUserId = async (req, res) => {
+  try {
+    const doctor = await Doctor.findOne({ userId: req.params.userId }).populate("userId", "fullName email phone roleName");
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+    res.status(200).json(doctor);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching doctor", error: error.message });
+  }
+}
 const updateDoctor = async (req, res) => {
   try {
     if (!["Admin", "Manager"].includes(req.user?.Role)) {
@@ -124,4 +135,5 @@ const searchDoctors = async (req, res) => {
   }
 };
 
-module.exports = { createDoctor, getDoctors, getDoctorById, updateDoctor, deleteDoctor, searchDoctors }
+
+module.exports = { createDoctor, getDoctors, getDoctorById, updateDoctor, deleteDoctor, searchDoctors, getDoctorByUserId };
