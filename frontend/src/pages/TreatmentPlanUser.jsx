@@ -1,7 +1,8 @@
 import React from 'react';
 import { Box, Container, Typography, TextField, Paper, List, ListItem, ListItemText } from "@mui/material";
-import Footer from "../../components/Footer";
-import Header from '../../components/Header';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
 
 const TreatmentPlanUser = () => {
   const currentTime = new Date().toLocaleString('vi-VN', {
@@ -16,7 +17,7 @@ const TreatmentPlanUser = () => {
 
   return (
     <Box>
-      <Header />
+      <Header/>
       <Container maxWidth="md" sx={{ backgroundColor: '#1a202c', color: 'white', p: 3, borderRadius: 2 }}>
         <Typography variant="h4" fontWeight="bold" mb={2} color="#5D786F">
           HIV Care System
@@ -73,7 +74,7 @@ const TreatmentPlanUser = () => {
           Danh tính của bạn được bảo vệ (Ẩn danh: Đã bật).
         </Typography>
       </Container>
-      <Footer />
+      <Footer/>
     </Box>
   );
 };
