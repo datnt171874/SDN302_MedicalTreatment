@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -17,73 +17,74 @@ import {
   IconButton,
   Badge,
   Snackbar,
-  Alert
-} from '@mui/material';
-import { 
-  Send as SendIcon, 
+  Alert,
+} from "@mui/material";
+import {
+  Send as SendIcon,
   Search as SearchIcon,
-  FilterList as FilterListIcon 
-} from '@mui/icons-material';
+  FilterList as FilterListIcon,
+} from "@mui/icons-material";
 
 function MessagesComments() {
   const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      sender: 'Dr. Emily White', 
-      content: 'Hi John, your lab results are ready. Please schedule a follow-up.', 
-      time: '2 hours ago', 
-      avatar: '/static/images/avatar/dr_white.jpg',
-      type: 'doctor',
-      unread: true
+    {
+      id: 1,
+      sender: "Dr. Emily White",
+      content:
+        "Hi John, your lab results are ready. Please schedule a follow-up.",
+      time: "2 hours ago",
+      avatar: "/static/images/avatar/dr_white.jpg",
+      type: "doctor",
+      unread: true,
     },
-    { 
-      id: 2, 
-      sender: 'You', 
-      content: 'Okay, thank you Dr. White. I will book an appointment soon.', 
-      time: '1 hour ago', 
-      avatar: '/static/images/avatar/user.jpg',
-      type: 'user',
-      unread: false
+    {
+      id: 2,
+      sender: "You",
+      content: "Okay, thank you Dr. White. I will book an appointment soon.",
+      time: "1 hour ago",
+      avatar: "/static/images/avatar/user.jpg",
+      type: "user",
+      unread: false,
     },
-    { 
-      id: 3, 
-      sender: 'Admin', 
-      content: 'Your annual health check-up reminder is due next month.', 
-      time: '1 day ago', 
-      avatar: '/static/images/avatar/admin.jpg',
-      type: 'admin',
-      unread: true
+    {
+      id: 3,
+      sender: "Admin",
+      content: "Your annual health check-up reminder is due next month.",
+      time: "1 day ago",
+      avatar: "/static/images/avatar/admin.jpg",
+      type: "admin",
+      unread: true,
     },
   ]);
-  const [newMessage, setNewMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [newMessage, setNewMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
 
   const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      setMessages(prevMessages => [
+    if (newMessage.trim() !== "") {
+      setMessages((prevMessages) => [
         ...prevMessages,
-        { 
-          id: prevMessages.length + 1, 
-          sender: 'You', 
-          content: newMessage, 
-          time: 'Just now', 
-          avatar: '/static/images/avatar/user.jpg',
-          type: 'user',
-          unread: false
-        }
+        {
+          id: prevMessages.length + 1,
+          sender: "You",
+          content: newMessage,
+          time: "Just now",
+          avatar: "/static/images/avatar/user.jpg",
+          type: "user",
+          unread: false,
+        },
       ]);
-      setNewMessage('');
+      setNewMessage("");
       setSnackbarMessage("Message sent successfully!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -96,34 +97,57 @@ function MessagesComments() {
 
   const getMessageTypeColor = (type) => {
     switch (type) {
-      case 'doctor': return '#2196f3';
-      case 'admin': return '#ff9800';
-      default: return '#4A6D5A';
+      case "doctor":
+        return "#2196f3";
+      case "admin":
+        return "#ff9800";
+      default:
+        return "#4A6D5A";
     }
   };
 
   const getMessageTypeLabel = (type) => {
     switch (type) {
-      case 'doctor': return 'Doctor';
-      case 'admin': return 'Admin';
-      default: return 'You';
+      case "doctor":
+        return "Doctor";
+      case "admin":
+        return "Admin";
+      default:
+        return "You";
     }
   };
 
-  const filteredMessages = messages.filter(message =>
-    message.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    message.sender.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMessages = messages.filter(
+    (message) =>
+      message.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      message.sender.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const unreadCount = messages.filter(msg => msg.unread && msg.type !== 'user').length;
+  const unreadCount = messages.filter(
+    (msg) => msg.unread && msg.type !== "user"
+  ).length;
 
   return (
-    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, bgcolor: '#f8f9fa', minHeight: '100vh' }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        p: { xs: 2, md: 3 },
+        bgcolor: "#f8f9fa",
+        minHeight: "100vh",
+      }}
+    >
+      <Box sx={{ maxWidth: 1200, mx: "auto" }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 600, color: '#333333' }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 600, color: "#333333" }}>
               Messages & Comments
             </Typography>
             {unreadCount > 0 && (
@@ -140,10 +164,24 @@ function MessagesComments() {
         <Grid container spacing={3}>
           {/* Messages List */}
           <Grid item xs={12} lg={8}>
-            <Card sx={{ boxShadow: 3, height: '75vh', display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                height: "75vh",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <CardContent
+                sx={{
+                  p: 0,
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 {/* Search Bar */}
-                <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
+                <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0" }}>
                   <TextField
                     fullWidth
                     size="small"
@@ -151,57 +189,85 @@ function MessagesComments() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     InputProps={{
-                      startAdornment: <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+                      startAdornment: (
+                        <SearchIcon sx={{ color: "text.secondary", mr: 1 }} />
+                      ),
                     }}
                   />
                 </Box>
 
                 {/* Messages */}
-                <List sx={{ flexGrow: 1, overflowY: 'auto', p: 0 }}>
+                <List sx={{ flexGrow: 1, overflowY: "auto", p: 0 }}>
                   {filteredMessages.map((message, index) => (
                     <React.Fragment key={message.id}>
-                      <ListItem 
-                        alignItems="flex-start" 
-                        sx={{ 
-                          py: 2, 
+                      <ListItem
+                        alignItems="flex-start"
+                        sx={{
+                          py: 2,
                           px: 2,
-                          bgcolor: message.unread && message.type !== 'user' ? '#f3f4f6' : 'transparent',
-                          '&:hover': { bgcolor: '#f8f9fa' }
+                          bgcolor:
+                            message.unread && message.type !== "user"
+                              ? "#f3f4f6"
+                              : "transparent",
+                          "&:hover": { bgcolor: "#f8f9fa" },
                         }}
                       >
-                        <Avatar 
-                          alt={message.sender} 
-                          src={message.avatar} 
-                          sx={{ 
-                            mr: 2, 
-                            width: 45, 
+                        <Avatar
+                          alt={message.sender}
+                          src={message.avatar}
+                          sx={{
+                            mr: 2,
+                            width: 45,
                             height: 45,
-                            border: `2px solid ${getMessageTypeColor(message.type)}`
-                          }} 
+                            border: `2px solid ${getMessageTypeColor(
+                              message.type
+                            )}`,
+                          }}
                         />
                         <Box sx={{ flexGrow: 1 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 600, color: '#333' }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              sx={{ fontWeight: 600, color: "#333" }}
+                            >
                               {message.sender}
                             </Typography>
-                            <Chip 
+                            <Chip
                               label={getMessageTypeLabel(message.type)}
                               size="small"
-                              sx={{ 
+                              sx={{
                                 bgcolor: getMessageTypeColor(message.type),
-                                color: 'white',
-                                fontSize: '0.7rem',
-                                height: 20
+                                color: "white",
+                                fontSize: "0.7rem",
+                                height: 20,
                               }}
                             />
-                            {message.unread && message.type !== 'user' && (
-                              <Chip label="New" color="error" size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
+                            {message.unread && message.type !== "user" && (
+                              <Chip
+                                label="New"
+                                color="error"
+                                size="small"
+                                sx={{ height: 20, fontSize: "0.7rem" }}
+                              />
                             )}
                           </Box>
-                          <Typography variant="body1" sx={{ color: '#555', mb: 1, lineHeight: 1.5 }}>
+                          <Typography
+                            variant="body1"
+                            sx={{ color: "#555", mb: 1, lineHeight: 1.5 }}
+                          >
                             {message.content}
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ color: "text.secondary" }}
+                          >
                             {message.time}
                           </Typography>
                         </Box>
@@ -212,7 +278,13 @@ function MessagesComments() {
                 </List>
 
                 {/* Message Input */}
-                <Box sx={{ p: 2, borderTop: '1px solid #e0e0e0', bgcolor: '#fafafa' }}>
+                <Box
+                  sx={{
+                    p: 2,
+                    borderTop: "1px solid #e0e0e0",
+                    bgcolor: "#fafafa",
+                  }}
+                >
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs>
                       <TextField
@@ -221,11 +293,13 @@ function MessagesComments() {
                         placeholder="Type your message..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") handleSendMessage();
+                        }}
                         sx={{
-                          '& .MuiOutlinedInput-root': {
-                            bgcolor: 'white'
-                          }
+                          "& .MuiOutlinedInput-root": {
+                            bgcolor: "white",
+                          },
                         }}
                       />
                     </Grid>
@@ -234,7 +308,10 @@ function MessagesComments() {
                         variant="contained"
                         endIcon={<SendIcon />}
                         onClick={handleSendMessage}
-                        sx={{ backgroundColor: '#4A6D5A', '&:hover': { backgroundColor: '#3A5C4B' } }}
+                        sx={{
+                          backgroundColor: "#4A6D5A",
+                          "&:hover": { backgroundColor: "#3A5C4B" },
+                        }}
                       >
                         Send
                       </Button>
@@ -247,7 +324,7 @@ function MessagesComments() {
 
           {/* Sidebar */}
           <Grid item xs={12} lg={4}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {/* Quick Stats */}
               <Card sx={{ boxShadow: 2 }}>
                 <CardContent>
@@ -256,8 +333,11 @@ function MessagesComments() {
                   </Typography>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-                      <Box sx={{ textAlign: 'center', p: 1 }}>
-                        <Typography variant="h4" sx={{ color: '#4A6D5A', fontWeight: 700 }}>
+                      <Box sx={{ textAlign: "center", p: 1 }}>
+                        <Typography
+                          variant="h4"
+                          sx={{ color: "#4A6D5A", fontWeight: 700 }}
+                        >
                           {messages.length}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -266,8 +346,11 @@ function MessagesComments() {
                       </Box>
                     </Grid>
                     <Grid item xs={6}>
-                      <Box sx={{ textAlign: 'center', p: 1 }}>
-                        <Typography variant="h4" sx={{ color: '#f44336', fontWeight: 700 }}>
+                      <Box sx={{ textAlign: "center", p: 1 }}>
+                        <Typography
+                          variant="h4"
+                          sx={{ color: "#f44336", fontWeight: 700 }}
+                        >
                           {unreadCount}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -285,25 +368,27 @@ function MessagesComments() {
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                     Quick Actions
                   </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Button 
-                      variant="outlined" 
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                  >
+                    <Button
+                      variant="outlined"
                       fullWidth
-                      sx={{ justifyContent: 'flex-start' }}
+                      sx={{ justifyContent: "flex-start" }}
                     >
                       Mark all as read
                     </Button>
-                    <Button 
-                      variant="outlined" 
+                    <Button
+                      variant="outlined"
                       fullWidth
-                      sx={{ justifyContent: 'flex-start' }}
+                      sx={{ justifyContent: "flex-start" }}
                     >
                       Delete old messages
                     </Button>
-                    <Button 
-                      variant="outlined" 
+                    <Button
+                      variant="outlined"
                       fullWidth
-                      sx={{ justifyContent: 'flex-start' }}
+                      sx={{ justifyContent: "flex-start" }}
                     >
                       Set notification settings
                     </Button>
@@ -319,15 +404,21 @@ function MessagesComments() {
                   </Typography>
                   <List dense>
                     <ListItem sx={{ px: 0 }}>
-                      <Avatar sx={{ mr: 2 }} src="/static/images/avatar/dr_white.jpg" />
-                      <ListItemText 
+                      <Avatar
+                        sx={{ mr: 2 }}
+                        src="/static/images/avatar/dr_white.jpg"
+                      />
+                      <ListItemText
                         primary="Dr. Emily White"
                         secondary="Doctor"
                       />
                     </ListItem>
                     <ListItem sx={{ px: 0 }}>
-                      <Avatar sx={{ mr: 2 }} src="/static/images/avatar/admin.jpg" />
-                      <ListItemText 
+                      <Avatar
+                        sx={{ mr: 2 }}
+                        src="/static/images/avatar/admin.jpg"
+                      />
+                      <ListItemText
                         primary="Admin"
                         secondary="Technical Support"
                       />
@@ -339,8 +430,16 @@ function MessagesComments() {
           </Grid>
         </Grid>
       </Box>
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

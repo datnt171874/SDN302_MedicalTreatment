@@ -16,13 +16,13 @@ import BookAppointment from "./pages/BookAppointment";
 import MessagesComments from "./pages/MessagesComments";
 import Account from "./pages/Account";
 
-
 function App() {
   const location = useLocation(); // Get current location
 
   return (
-    <Box sx={{ backgroundColor: '#EAE7D6', minHeight: '100vh' }}>
-      {!location.pathname.startsWith('/user') && <Header />} {/* Conditionally render Header */}
+    <Box sx={{ backgroundColor: "#EAE7D6", minHeight: "100vh" }}>
+      {!location.pathname.startsWith("/user") && <Header />}{" "}
+      {/* Conditionally render Header */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkin" element={<CheckinPage />} />
@@ -30,14 +30,18 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/doctor" element={<DoctorPage />} />
-        
+
         {/* User Dashboard Routes */}
         <Route path="/user" element={<UserDashboard />}>
-          <Route index element={<Dashboard />} /> {/* Default child route for /user */}
+          <Route index element={<Dashboard />} />{" "}
+          {/* Default child route for /user */}
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="medical-records" element={<MedicalRecords />} />
           <Route path="appointments" element={<BookAppointment />} />
-          <Route path="upcoming-appointments" element={<UpcomingAppointments />} />
+          <Route
+            path="upcoming-appointments"
+            element={<UpcomingAppointments />}
+          />
           <Route path="messages" element={<MessagesComments />} />
           <Route path="profile" element={<Account />} />
         </Route>
