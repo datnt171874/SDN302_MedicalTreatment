@@ -1,9 +1,10 @@
 const Doctor = require("../models/Doctor");
 const User = require("../models/User");
+
 const createDoctor = async (req, res) => {
   try {
     if (!["Admin", "Manager"].includes(req.user?.roleName)) {
-      res
+      return res
         .status(403)
         .json({ message: "Forbidden: Only Admin, Manager can create doctor" });
     }
@@ -47,6 +48,7 @@ const createDoctor = async (req, res) => {
       .json({ message: "Error creating doctor", error: error.message });
   }
 };
+
 const getDoctors = async (req, res, next) => {
   try {
     const doctors = await Doctor.find().populate(
@@ -60,6 +62,7 @@ const getDoctors = async (req, res, next) => {
       .json({ message: "Can not fetch doctors", error: error.message });
   }
 };
+
 const getDoctorById = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id).populate(
@@ -67,7 +70,7 @@ const getDoctorById = async (req, res) => {
       "fullName email phone roleName"
     );
     if (!doctor) {
-      res.status(404).json({ message: "Can not find doctor" });
+      return res.status(404).json({ message: "Can not find doctor" });
     }
     res.status(200).json(doctor);
   } catch (error) {
@@ -76,14 +79,30 @@ const getDoctorById = async (req, res) => {
       .json({ message: "Error fetching doctor", error: error.message });
   }
 };
+
+const getDoctorByUserId = async (req, res) => {
+  try {
+    const doctor = await Doctor.findOne({ userId: req.params.userId }).populate(
+      "userId",
+      "fullName email phone roleName"
+    );
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+    res.status(200).json(doctor);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching doctor", error: error.message });
+  }
+};
+
 const updateDoctor = async (req, res) => {
   try {
-    if (!["Admin", "Manager"].includes(req.user?.Role)) {
-      return res
-        .status(403)
-        .json({
-          message: "Forbidden: Only Admin or Manager can update doctors",
-        });
+    if (!["Admin", "Manager"].includes(req.user?.roleName)) {
+      return res.status(403).json({
+        message: "Forbidden: Only Admin or Manager can update doctors",
+      });
     }
 
     const {
@@ -125,6 +144,7 @@ const updateDoctor = async (req, res) => {
       .json({ message: "Error updating doctor", error: error.message });
   }
 };
+
 const deleteDoctor = async (req, res) => {
   try {
     if (req.user?.roleName !== "Admin") {
@@ -148,13 +168,14 @@ const deleteDoctor = async (req, res) => {
       .json({ message: "Error deleting doctor", error: error.message });
   }
 };
+
 const searchDoctors = async (req, res) => {
   try {
     const { skill, day } = req.query;
     const query = {};
 
     if (skill) {
-      query.Skills = { $in: [skill] };
+      query.skills = { $in: [skill] };
     }
     if (day) {
       query["workSchedule.days"] = { $in: [day] };
@@ -179,4 +200,5 @@ module.exports = {
   updateDoctor,
   deleteDoctor,
   searchDoctors,
+  getDoctorByUserId,
 };

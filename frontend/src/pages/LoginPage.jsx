@@ -15,27 +15,16 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ userName: '', password: '' });
   const navigate = useNavigate();
 
-  // const handleSubmit = async (e) => {Add commentMore actions
-//     e.preventDefault();
-//     try {
-//       const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-//       localStorage.setItem('token', response.data.token);
-//       console.log('Login successful:', response.data);Add commentMore actions
-//       navigate('/');
-//     } catch (error) {
-//       console.error('Error logging in:', error.response?.data?.message || error.message);
-//     }
-//   };
-
 
 //admin1 12345 | doctor1 12345 | user1 12345
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-      const {roleName, token} = response.data;
+      const {roleName, token, userId} = response.data;
       if (token) {
         localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId); 
         if (roleName === 'Doctor') {
           navigate('/doctor');
         } else if (roleName === 'Admin') {
