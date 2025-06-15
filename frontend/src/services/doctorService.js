@@ -9,7 +9,7 @@ export const doctorService = {
       throw new Error("No authentication token found");
     }
 
-    const response = await axios.get(`${API_URL}/doctors`, {
+    const response = await axios.get(`${API_URL}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export const doctorService = {
       throw new Error("No authentication token found");
     }
 
-    const response = await axios.get(`${API_URL}/doctors/${id}`, {
+    const response = await axios.get(`${API_URL}/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export const doctorService = {
       throw new Error("No authentication token found");
     }
 
-    const response = await axios.get(`${API_URL}/doctors/search`, {
+    const response = await axios.get(`${API_URL}/search`, {
       params: { skill, day },
       headers: {
         Authorization: `Bearer ${token}`,
