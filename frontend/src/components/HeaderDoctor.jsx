@@ -65,7 +65,7 @@ const HeaderDoctor = () => {
                 color: '#fff',
                 fontWeight: 600,
                 textTransform: 'none',
-                fontSize: '1rem',
+                fontSize: '0.9rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,

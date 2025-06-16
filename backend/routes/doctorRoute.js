@@ -9,6 +9,8 @@ router.get("/:id", authenticate, doctorController.getDoctorById)
 router.get("/user/:userId", authenticate, doctorController.getDoctorByUserId)
 router.post("/", authenticate, authorize(['Manager', 'Admin']) ,doctorController.createDoctor)
 router.put("/:id", authenticate, doctorController.updateDoctor);
+// Example adjustment in doctorRoute.js
+router.put('/user/:userId', authenticate, doctorController.updateDoctor);
 router.delete("/:id", authenticate, doctorController.deleteDoctor);
 router.get("/search", authenticate, doctorController.searchDoctors);
 module.exports = router
