@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,26 +12,33 @@ import {
   Divider,
   Container,
   Snackbar,
-  Alert
-} from '@mui/material';
-import { PhotoCamera, Save } from '@mui/icons-material';
+  Alert,
+} from "@mui/material";
+import { PhotoCamera, Save } from "@mui/icons-material";
+import { userService } from "../services/userService";
+import axios from "axios";
 
 function Account() {
-  const [profile, setProfile] = useState({
-    fullName: 'User Name',
-    email: 'user.email@example.com',
-    phone: '0123 456 789',
-    address: '123 Đường ABC, Quận XYZ, TP.HCM',
-    dob: '1990-01-01',
-    avatar: '/static/images/avatar/1.jpg',
-  });
-
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await userService.getProfile();
+      setProfile(profile);
+      setLoading(false);
+    };
+    fetchProfile();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (!profile) return <div>Không tìm thấy thông tin người dùng</div>;
+
   const handleChange = (e) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -42,9 +49,9 @@ function Account() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setProfile(prev => ({
+        setProfile((prev) => ({
           ...prev,
-          avatar: event.target.result,
+          imageUrl: event.target.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -52,26 +59,38 @@ function Account() {
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbarOpen(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Profile Updated:', profile);
-    setSnackbarMessage('Account information updated successfully!');
-    setSnackbarSeverity('success');
-    setSnackbarOpen(true);
+    try {
+      // Gửi request cập nhật profile
+      const token = localStorage.getItem("token");
+      const updateData = { ...profile };
+      // Không gửi avatar nếu là base64 (chỉ gửi nếu backend hỗ trợ)
+      await axios.put("http://localhost:3000/api/auth/me", updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSnackbarMessage("Account information updated successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (err) {
+      setSnackbarMessage("Update failed!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography 
-        variant="h4" 
+      <Typography
+        variant="h4"
         component="h1"
-        gutterBottom 
+        gutterBottom
         align="center"
         sx={{ mb: 4, fontWeight: 600 }}
       >
@@ -83,23 +102,28 @@ function Account() {
           <Grid container spacing={4}>
             {/* Avatar Section */}
             <Grid item xs={12} md={4}>
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Avatar 
-                  src={profile.avatar}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Avatar
+                  src={profile.imageUrl}
                   sx={{ width: 120, height: 120, mb: 2 }}
                 />
-                
                 <input
                   accept="image/*"
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                   id="avatar-upload"
                   type="file"
                   onChange={handleAvatarChange}
                 />
                 <label htmlFor="avatar-upload">
-                  <Button 
-                    variant="outlined" 
-                    component="span" 
+                  <Button
+                    variant="outlined"
+                    component="span"
                     startIcon={<PhotoCamera />}
                     size="small"
                     sx={{ mb: 2 }}
@@ -107,23 +131,24 @@ function Account() {
                     Change Photo
                   </Button>
                 </label>
-                
                 <Typography variant="h6" align="center">
                   {profile.fullName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" align="center">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  align="center"
+                >
                   {profile.email}
                 </Typography>
               </Box>
             </Grid>
-
             {/* Form Section */}
             <Grid item xs={12} md={8}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Personal Information
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              
               <Box component="form" onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
@@ -131,7 +156,7 @@ function Account() {
                       fullWidth
                       label="Full Name"
                       name="fullName"
-                      value={profile.fullName}
+                      value={profile.fullName || ""}
                       onChange={handleChange}
                     />
                   </Grid>
@@ -141,7 +166,7 @@ function Account() {
                       label="Email"
                       name="email"
                       type="email"
-                      value={profile.email}
+                      value={profile.email || ""}
                       onChange={handleChange}
                     />
                   </Grid>
@@ -150,7 +175,7 @@ function Account() {
                       fullWidth
                       label="Phone"
                       name="phone"
-                      value={profile.phone}
+                      value={profile.phone || ""}
                       onChange={handleChange}
                     />
                   </Grid>
@@ -158,9 +183,13 @@ function Account() {
                     <TextField
                       fullWidth
                       label="Date of Birth"
-                      name="dob"
+                      name="dateOfBirth"
                       type="date"
-                      value={profile.dob}
+                      value={
+                        profile.dateOfBirth
+                          ? profile.dateOfBirth.slice(0, 10)
+                          : ""
+                      }
                       onChange={handleChange}
                       InputLabelProps={{ shrink: true }}
                     />
@@ -170,15 +199,16 @@ function Account() {
                       fullWidth
                       label="Address"
                       name="address"
-                      value={profile.address}
+                      value={profile.address || ""}
                       onChange={handleChange}
                       multiline
                       rows={3}
                     />
                   </Grid>
                 </Grid>
-                
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                <Box
+                  sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}
+                >
                   <Button
                     type="submit"
                     variant="contained"
@@ -193,8 +223,16 @@ function Account() {
           </Grid>
         </CardContent>
       </Card>
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

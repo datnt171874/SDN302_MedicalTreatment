@@ -13,7 +13,7 @@ const authenticate = (req, res, next)=>{
         console.log("Decoded: ", decoded);
         
         req.user = {id: decoded.id, roleName: decoded.roleName};
-        console.log(`User Authenticated: ${req.user.id} User Role: ${req.user.roleName}`);
+        console.log(`User Authenticated: ${req.user.id} || User Role: ${req.user.roleName}`);
         
         next()
     } catch (error) {

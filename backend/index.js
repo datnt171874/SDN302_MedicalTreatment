@@ -8,6 +8,7 @@ const authRoute = require("./routes/authRoute");
 const appointmentRoute = require("./routes/appointmentRoute");
 const doctorRoute = require("./routes/doctorRoute");
 const medicalRecordRoute = require("./routes/medicalRecordRoute");
+const seedRoute = require("./routes/seedRoute");
 
 dotenv.config();
 const app = express();
@@ -33,5 +34,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoute);
 app.use("/api/appointment", appointmentRoute);
-app.use("/api/doctor", doctorRoute);
 app.use("/api/medical-records", medicalRecordRoute);
+app.use("/api/doctors", doctorRoute);
+app.use("/api/seed", seedRoute);

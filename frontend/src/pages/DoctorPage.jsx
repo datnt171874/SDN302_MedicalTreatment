@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -7,33 +7,125 @@ import {
   CardContent,
   Chip,
   Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   Grid,
   Typography,
+  CircularProgress,
 } from '@mui/material';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
+import Logout from '../components/Logout'; // Adjust the import path as necessary
 
 const DoctorPage = () => {
+  const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [openDetail, setOpenDetail] = useState(false);
+
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const fetchDoctorByUserId = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching doctor with userId:', userId, 'token:', localStorage.getItem('token'));
+        const res = await fetch(`http://localhost:3000/api/doctors/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error(`Failed to fetch doctor data: ${res.status} - ${res.statusText}`);
+        }
+        const data = await res.json();
+        console.log('Doctor data:', data);
+        setDoctor(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchDoctorByUserId();
+    } else {
+      setError('User ID not found. Please log in again.');
+      setLoading(false);
+    }
+  }, [userId]);
+
+  const handleOpenDetail = () => {
+    setOpenDetail(true);
+  };
+
+  const handleCloseDetail = () => {
+    setOpenDetail(false);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
+        <Container maxWidth="sm">
+          <Typography color="error">Lỗi: {error}</Typography>
+          <Logout />
+        </Container>
+      </Box>
+    );
+  }
+
+  if (!doctor || !doctor.userId) {
+    return (
+      <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
+        <Container maxWidth="sm">
+          <Typography>Không tìm thấy dữ liệu bác sĩ hoặc thông tin người dùng.</Typography>
+          <Logout />
+        </Container>
+      </Box>
+    );
+  }
+
+  const { userId: userInfo, certificates, skills, experiences, workSchedule } = doctor;
+
   return (
+    
     <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="sm">
-        {/* Doctor Info */}
-        <Card sx={{ mb: 3, p: 2, borderRadius: 3 }}>
+        {/* Doctor Info Card */}
+        <Card sx={{ mb: 3, p: 2, borderRadius: 3, cursor: 'pointer' }} onClick={handleOpenDetail}>
           <Box display="flex" alignItems="center" gap={2}>
             <Avatar
               src="https://via.placeholder.com/80"
-              alt="Doctor"
+              alt={userInfo.userName}
               sx={{ width: 64, height: 64 }}
             />
             <Box>
               <Typography fontWeight="bold" fontSize={20}>
-                BS. Lê Quang Liêm
+                TSGS. {userInfo.fullName || userInfo.userName || 'Tên bác sĩ'}
               </Typography>
-              <Typography color="text.secondary">Truyền nhiễm</Typography>
+              <Typography color="text.secondary">
+                {skills?.length > 0 ? (
+              skills.map((s, i) => (
+                <Chip key={i} label={`${s.name} (${s.level})`} sx={{ m: 0.5 }} />
+              ))
+            ) : (
+              <Typography color="text.secondary">Không có dữ liệu kỹ năng</Typography>
+            )}
+              </Typography>
               <Box display="flex" alignItems="center" gap={1}>
                 <EmailIcon fontSize="small" />
-                <Typography variant="body2">Qliem.@top22.vn</Typography>
+                <Typography variant="body2">{userInfo.email || 'Email'}</Typography>
               </Box>
             </Box>
           </Box>
@@ -66,27 +158,63 @@ const DoctorPage = () => {
           </Grid>
         </Card>
 
+        {/* Modal chi tiết thông tin bác sĩ */}
+        <Dialog open={openDetail} onClose={handleCloseDetail} fullWidth maxWidth="sm">
+          <DialogTitle>Chi tiết bác sĩ</DialogTitle>
+          <DialogContent dividers>
+            <Typography variant="h6" gutterBottom>📜 Chứng chỉ</Typography>
+            {certificates?.length > 0 ? (
+              certificates.map((c, i) => (
+                <Typography key={i}>
+                  • {c.name} ({c.issuedBy || 'N/A'}, {new Date(c.date).toLocaleDateString()})
+                </Typography>
+              ))
+            ) : (
+              <Typography color="text.secondary">Không có dữ liệu chứng chỉ</Typography>
+            )}
+
+            <Typography variant="h6" mt={2} gutterBottom>💼 Kinh nghiệm</Typography>
+            {experiences?.length > 0 ? (
+              experiences.map((e, i) => (
+                <Typography key={i}>
+                  • {e.position} tại {e.organization} (
+                 từ {new Date(e.startDate).getFullYear()} - {e.endDate ? new Date(e.endDate).getFullYear() : 'nay'} )
+                </Typography>
+              ))
+            ) : (
+              <Typography color="text.secondary">Không có dữ liệu kinh nghiệm</Typography>
+            )}
+
+            <Typography variant="h6" mt={2} gutterBottom>🧠 Kỹ năng</Typography>
+            {skills?.length > 0 ? (
+              skills.map((s, i) => (
+                <Chip key={i} label={`${s.name} (${s.level})`} sx={{ m: 0.5 }} />
+              ))
+            ) : (
+              <Typography color="text.secondary">Không có dữ liệu kỹ năng</Typography>
+            )}
+
+            <Typography variant="h6" mt={2} gutterBottom>🕒 Lịch làm việc</Typography>
+            {workSchedule?.days?.length > 0 || workSchedule?.hours?.start || workSchedule?.hours?.end ? (
+              <Box>
+                <Typography>
+                  • Ngày làm việc: {workSchedule.days.join(', ') || 'Chưa xác định'}
+                </Typography>
+                <Typography>
+                  • Giờ làm việc: {workSchedule.hours.start || 'N/A'} - {workSchedule.hours.end || 'N/A'}
+                </Typography>
+              </Box>
+            ) : (
+              <Typography color="text.secondary">Không có dữ liệu lịch làm việc</Typography>
+            )}
+          </DialogContent>
+        </Dialog>
+
         {/* ARV protocols */}
         <Typography fontWeight="bold" fontSize={18} mb={2}>
           Phác đồ ARV mẫu
         </Typography>
-        {[
-          {
-            title: 'TDF + 3TC + DTG',
-            target: 'Người lớn & trẻ vị thành niên',
-            note: 'Ưu tiên hàng đầu theo hướng dẫn mới nhất.',
-          },
-          {
-            title: 'TDF + 3TC + EFV',
-            target: 'Phụ nữ mang thai',
-            note: 'Dùng khi không dung nạp DTG.',
-          },
-          {
-            title: 'ABC + 3TC + LPV/r',
-            target: 'Trẻ em',
-            note: 'Dành cho trẻ dưới 3 tuổi hoặc không dùng được TDF.',
-          },
-        ].map((protocol, index) => (
+        {[...Array(3)].map((_, index) => (
           <Card
             key={index}
             sx={{
@@ -98,11 +226,11 @@ const DoctorPage = () => {
           >
             <CardContent>
               <Typography fontWeight="bold" color="primary">
-                {protocol.title}
+                ARV protocol {index + 1}
               </Typography>
-              <Typography variant="body2">{protocol.target}</Typography>
+              <Typography variant="body2">Chi tiết dành cho nhóm bệnh nhân đặc biệt.</Typography>
               <Typography variant="body2" color="text.secondary">
-                {protocol.note}
+                Ưu tiên theo hướng dẫn quốc gia.
               </Typography>
               <Box mt={1}>
                 <Button
@@ -162,6 +290,7 @@ const DoctorPage = () => {
           </Card>
         ))}
       </Container>
+      <Logout />
     </Box>
   );
 };
