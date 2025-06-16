@@ -32,4 +32,4 @@ const appointmentSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Appointment", appointmentSchema);
+module.exports = mongoose.model('Appointment', appointmentSchema);

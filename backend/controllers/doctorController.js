@@ -99,49 +99,41 @@ const getDoctorByUserId = async (req, res) => {
 
 const updateDoctor = async (req, res) => {
   try {
-    if (!["Admin", "Manager"].includes(req.user?.roleName)) {
-      return res.status(403).json({
-        message: "Forbidden: Only Admin or Manager can update doctors",
-      });
-    }
+    // if (!["Admin", "Manager", "Doctor"].includes(req.user?.Role)) {
+    //   return res.status(403).json({ message: "Forbidden: Only Admin or Manager or Doctor can update doctors" });
+    // }
+    console.log("Update request body:", JSON.stringify(req.body, null, 2));
 
-    const {
-      certificates,
-      experiences,
-      skills,
-      workSchedule,
-      fullName,
-      email,
-      phone,
-      address,
-    } = req.body;
+    const doctor = await Doctor.findById(req.params.id).populate('userId');
 
-    const doctor = await Doctor.findById(req.params.id);
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found" });
     }
 
-    doctor.certificates = certificates || doctor.certificates;
-    doctor.experiences = experiences || doctor.experiences;
-    doctor.skills = skills || doctor.skills;
-    doctor.workSchedule = workSchedule || doctor.workSchedule;
+    const { certificates, experiences, skills, workSchedule, fullName, email, phone, address } = req.body;
+
+    doctor.certificates = certificates ?? doctor.certificates;
+    doctor.experiences = experiences ?? doctor.experiences;
+    doctor.skills = skills ?? doctor.skills;
+    doctor.workSchedule = workSchedule ?? doctor.workSchedule;
     doctor.updatedAt = new Date();
+
     await doctor.save();
 
     if (fullName || email || phone || address) {
-      await User.findByIdAndUpdate(doctor.userId, {
+      await User.findByIdAndUpdate(doctor.userId._id, {
         fullName,
         email,
         phone,
-        address,
-      });
+        address
+      }, { new: true });
     }
 
     res.json(doctor);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating doctor", error: error.message });
+    console.log("Update Doctor Error:", error);
+    
+    res.status(500).json({ message: "Error updating doctor", error: error.message });
   }
 };
 

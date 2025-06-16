@@ -99,6 +99,7 @@ const DoctorPage = () => {
   const { userId: userInfo, certificates, skills, experiences, workSchedule } = doctor;
 
   return (
+    
     <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="sm">
         {/* Doctor Info Card */}
