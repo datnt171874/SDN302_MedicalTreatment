@@ -418,6 +418,16 @@ function UpcomingAppointments() {
                                   }}
                                 />
                               )}
+                              <Chip
+                                  size="small"
+                                  label={appointment.appointmentCode || "N.A"}
+                                  variant="outlined"
+                                  sx={{
+                                    borderColor: "#4A6D5A",
+                                    color: "#4A6D5A",
+                                    fontSize: "0.75rem",
+                                  }}
+                                />
                             </Stack>
                           </Box>
                         </Box>

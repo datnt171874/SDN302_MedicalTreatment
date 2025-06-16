@@ -51,7 +51,7 @@ function Account() {
       reader.onload = (event) => {
         setProfile((prev) => ({
           ...prev,
-          avatar: event.target.result,
+          imageUrl: event.target.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -110,7 +110,7 @@ function Account() {
                 }}
               >
                 <Avatar
-                  src={profile.avatar}
+                  src={profile.imageUrl}
                   sx={{ width: 120, height: 120, mb: 2 }}
                 />
                 <input
