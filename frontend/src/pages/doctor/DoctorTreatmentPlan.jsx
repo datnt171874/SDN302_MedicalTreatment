@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -7,15 +7,15 @@ import {
   Button,
   Grid,
   Paper,
-  Divider
-} from '@mui/material';
+  Divider,
+} from "@mui/material";
 
 const DoctorTreatmentPlan = () => {
-  const [plan, setPlan] = useState('');
-  const [medications, setMedications] = useState('');
-  const [notes, setNotes] = useState('');
-  const [medicalRecord, setMedicalRecord] = useState('');
-  const [testResults, setTestResults] = useState('');
+  const [plan, setPlan] = useState("");
+  const [medications, setMedications] = useState("");
+  const [notes, setNotes] = useState("");
+  const [medicalRecord, setMedicalRecord] = useState("");
+  const [testResults, setTestResults] = useState("");
 
   const handleSave = () => {
     // Gửi dữ liệu đến API hoặc lưu trữ local state
@@ -23,10 +23,16 @@ const DoctorTreatmentPlan = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f5f5f5', py: 6, minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: "#f5f5f5", py: 6, minHeight: "100vh" }}>
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center" color="black">
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            gutterBottom
+            textAlign="center"
+            color="black"
+          >
             Hồ sơ điều trị
           </Typography>
           <Divider sx={{ my: 3 }} />
