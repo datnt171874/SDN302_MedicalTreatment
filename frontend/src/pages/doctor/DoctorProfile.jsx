@@ -9,6 +9,8 @@ import {
   Grid,
   Divider,
   IconButton,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
@@ -17,7 +19,7 @@ const DoctorProfile = () => {
   const [skills, setSkills] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [experiences, setExperiences] = useState([]);
-  const [workSchedule, setWorkSchedule] = useState('');
+  const [workSchedules, setWorkSchedules] = useState([{ days: [], hours: { start: '08:00', end: '17:00' } }]);
   const [inputSkill, setInputSkill] = useState('');
   const [inputCert, setInputCert] = useState('');
   const [inputExp, setInputExp] = useState('');
@@ -30,28 +32,19 @@ const DoctorProfile = () => {
     const fetchDoctorData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching doctor with userId:', userId, 'token:', localStorage.getItem('token'));
         const res = await fetch(`http://localhost:3000/api/doctors/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         if (!res.ok) {
           throw new Error(`Failed to fetch doctor data: ${res.status} - ${res.statusText}`);
         }
         const data = await res.json();
-        console.log('Doctor data:', data);
+        console.log('Fetched doctor data:', data);
         setDoctorId(data._id);
         setSkills(Array.isArray(data.skills) ? data.skills.map(s => `${s.name} (${s.level})`) : []);
         setCertificates(Array.isArray(data.certificates) ? data.certificates.map(c => `${c.name} (${c.issuedBy || 'N/A'}, ${new Date(c.date).toLocaleDateString()})`) : []);
         setExperiences(Array.isArray(data.experiences) ? data.experiences.map(e => `${e.position} tại ${e.organization} (${new Date(e.startDate).getFullYear()} - ${e.endDate ? new Date(e.endDate).getFullYear() : 'nay'})`) : []);
-        setWorkSchedule(
-          data.workSchedule
-            ? `${(data.workSchedule.days || []).join(', ') || 'Chưa xác định'}, ${
-                data.workSchedule.hours?.start || 'N/A'
-              } - ${data.workSchedule.hours?.end || 'N/A'}`
-            : ''
-        );
+        setWorkSchedules(data.workSchedule || [{ days: [], hours: { start: '08:00', end: '17:00' } }]);
         setLoading(false);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -60,9 +53,8 @@ const DoctorProfile = () => {
       }
     };
 
-    if (userId) {
-      fetchDoctorData();
-    } else {
+    if (userId) fetchDoctorData();
+    else {
       setError('User ID not found. Please log in again.');
       setLoading(false);
     }
@@ -77,7 +69,7 @@ const DoctorProfile = () => {
 
   const addCertificate = () => {
     if (inputCert.trim()) {
-      const date = new Date().toISOString(); // Temporary; consider adding date input
+      const date = new Date().toISOString();
       setCertificates([...certificates, `${inputCert.trim()} (N/A, ${new Date(date).toLocaleDateString()})`]);
       setInputCert('');
     }
@@ -96,74 +88,85 @@ const DoctorProfile = () => {
     }
   };
 
+  const addWorkSchedule = () => {
+    setWorkSchedules([...workSchedules, { days: [], hours: { start: '08:00', end: '17:00' } }]);
+  };
+
+  const updateWorkSchedule = (index, field, value) => {
+    const newSchedules = [...workSchedules];
+    if (field === 'start' || field === 'end') {
+      newSchedules[index] = {
+        ...newSchedules[index],
+        hours: {
+          ...newSchedules[index].hours,
+          [field]: value
+        }
+      };
+    } else {
+      newSchedules[index] = {
+        ...newSchedules[index],
+        [field]: value
+      };
+    }
+    setWorkSchedules(newSchedules);
+  };
+
   const handleSave = async () => {
     if (!doctorId) {
       setError('Doctor ID not found. Cannot update profile.');
       return;
     }
     try {
+      const requestBody = {
+        skills: skills.map(s => {
+          const [name, level] = s.split(' (');
+          return { name: name.trim(), level: level.replace(')', '').trim() };
+        }),
+        certificates: certificates.map(c => {
+          const [name, details] = c.split(' (');
+          const [issuedBy, dateStr] = details ? details.replace(')', '').split(', ') : ['N/A', new Date().toISOString()];
+          return { name: name.trim(), issuedBy, date: new Date(dateStr).toISOString() };
+        }),
+        experiences: experiences.map(e => {
+          const match = e.match(/(.+) tại (.+) \((\d{4}) - (\d{4}|nay)\)/);
+          if (match) {
+            const [, position, organization, startYear, endYear] = match;
+            return {
+              position: position.trim(),
+              organization: organization.trim(),
+              startDate: new Date(`${startYear}-01-01`).toISOString(),
+              endDate: endYear === 'nay' ? null : new Date(`${endYear}-12-31`).toISOString(),
+            };
+          }
+          return { position: e.trim(), organization: 'N/A', startDate: new Date().toISOString() };
+        }),
+        workSchedule: workSchedules,
+      };
+      console.log('Request body:', requestBody);
       const res = await fetch(`http://localhost:3000/api/doctors/${doctorId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({
-          skills: skills.map(s => {
-            const [name, level] = s.split(' (');
-            return { name: name.trim(), level: level.replace(')', '').trim() };
-          }),
-          certificates: certificates.map(c => {
-            const [name, details] = c.split(' (');
-            const [issuedBy, dateStr] = details ? details.replace(')', '').split(', ') : ['N/A', new Date().toISOString()];
-            return { name: name.trim(), issuedBy, date: new Date(dateStr).toISOString() };
-          }),
-          experiences: experiences.map(e => {
-            const match = e.match(/(.+) tại (.+) \((\d{4}) - (\d{4}|nay)\)/);
-            if (match) {
-              const [, position, organization, startYear, endYear] = match;
-              return {
-                position: position.trim(),
-                organization: organization.trim(),
-                startDate: new Date(`${startYear}-01-01`).toISOString(),
-                endDate: endYear === 'nay' ? null : new Date(`${endYear}-12-31`).toISOString(),
-              };
-            }
-            return { position: e.trim(), organization: 'N/A', startDate: new Date().toISOString() };
-          }),
-          workSchedule: {
-            days: workSchedule.split(',')[0]?.trim().split(' - ').filter(Boolean) || [],
-            hours: {
-              start: workSchedule.split('-')[1]?.split(',')[0]?.trim() || '',
-              end: workSchedule.split('-')[1]?.split(',')[1]?.trim() || '',
-            },
-          },
-        }),
+        body: JSON.stringify(requestBody),
       });
-      if (!res.ok) {
-        throw new Error(`Failed to update doctor profile: ${res.status} - ${res.statusText}`);
-      }
+      if (!res.ok) throw new Error(`Failed to update: ${res.status}`);
       const data = await res.json();
       console.log('Update response:', data);
       alert('Cập nhật hồ sơ thành công!');
     } catch (err) {
-      console.error('Save error:', err);
-      setError(`Failed to update doctor profile: ${err.message}`);
+      setError(`Failed to update: ${err.message}`);
     }
   };
 
-  if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>Loading...</Box>;
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 5, px: 2 }}>
-        <Typography color="error">{error}</Typography>
-        <Button variant="contained" sx={{ mt: 2 }} onClick={() => window.location.reload()}>Thử lại</Button>
-      </Box>
-    );
-  }
+  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>Loading...</Box>;
+  if (error) return (
+    <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 5, px: 2 }}>
+      <Typography color="error">{error}</Typography>
+      <Button variant="contained" sx={{ mt: 2 }} onClick={() => window.location.reload()}>Thử lại</Button>
+    </Box>
+  );
 
   return (
     <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 5, px: 2 }}>
@@ -174,13 +177,9 @@ const DoctorProfile = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Kỹ năng
-        </Typography>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>Kỹ năng</Typography>
         <Grid container spacing={1} mb={2}>
-          {skills.map((skill, index) => (
-            <Grid item key={index}><Chip label={skill} /></Grid>
-          ))}
+          {skills.map((skill, index) => <Grid item key={index}><Chip label={skill} /></Grid>)}
         </Grid>
         <Box display="flex" gap={1}>
           <TextField
@@ -195,13 +194,9 @@ const DoctorProfile = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Chứng chỉ
-        </Typography>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>Chứng chỉ</Typography>
         <Grid container spacing={1} mb={2}>
-          {certificates.map((cert, index) => (
-            <Grid item key={index}><Chip label={cert} /></Grid>
-          ))}
+          {certificates.map((cert, index) => <Grid item key={index}><Chip label={cert} /></Grid>)}
         </Grid>
         <Box display="flex" gap={1}>
           <TextField
@@ -216,13 +211,9 @@ const DoctorProfile = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Kinh nghiệm
-        </Typography>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>Kinh nghiệm</Typography>
         <Grid container spacing={1} mb={2}>
-          {experiences.map((exp, index) => (
-            <Grid item key={index}><Chip label={exp} /></Grid>
-          ))}
+          {experiences.map((exp, index) => <Grid item key={index}><Chip label={exp} /></Grid>)}
         </Grid>
         <Box display="flex" gap={1}>
           <TextField
@@ -237,15 +228,63 @@ const DoctorProfile = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Lịch làm việc
-        </Typography>
-        <TextField
-          fullWidth
-          value={workSchedule}
-          onChange={(e) => setWorkSchedule(e.target.value)}
-          label="Cập nhật lịch làm việc (Thứ Hai - Thứ Tư - 9:00, 17:00)"
-        />
+        <Typography variant="h6" fontWeight="bold" gutterBottom>Lịch làm việc</Typography>
+        {workSchedules.map((schedule, index) => (
+          <Box key={index} mb={2}>
+            <Grid container spacing={1} alignItems="center">
+              <Grid item xs={4}>
+                <Select
+                  fullWidth
+                  multiple
+                  value={schedule.days || []}
+                  onChange={(e) => updateWorkSchedule(index, 'days', e.target.value)}
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                    <MenuItem key={day} value={day}>{day}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  select
+                  label="Start Time"
+                  value={schedule.hours.start || '08:00'}
+                  onChange={(e) => updateWorkSchedule(index, 'start', e.target.value)}
+                >
+                  {Array.from({ length: 19 }, (_, i) => {
+                    const hour = 8 + Math.floor(i / 2);
+                    const minute = (i % 2) * 30;
+                    const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    return <MenuItem key={time} value={time}>{time}</MenuItem>;
+                  })}
+                </TextField>
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  select
+                  label="End Time"
+                  value={schedule.hours.end || '17:00'}
+                  onChange={(e) => updateWorkSchedule(index, 'end', e.target.value)}
+                >
+                  {Array.from({ length: 19 }, (_, i) => {
+                    const hour = 8 + Math.floor(i / 2);
+                    const minute = (i % 2) * 30;
+                    const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    return <MenuItem key={time} value={time}>{time}</MenuItem>;
+                  })}
+                </TextField>
+              </Grid>
+              <Grid item xs={2}>
+                <Button variant="outlined" onClick={addWorkSchedule} fullWidth>
+                  Thêm lịch
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        ))}
 
         <Button variant="contained" sx={{ mt: 3 }} fullWidth onClick={handleSave}>
           Lưu thay đổi

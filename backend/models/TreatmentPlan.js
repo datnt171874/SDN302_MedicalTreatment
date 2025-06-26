@@ -6,7 +6,8 @@ const treatmentPlanSchema = new Schema({
   regimen: { type: String, required: true }, // e.g., "TDF + 3TC + DTG"
   startDate: { type: Date, required: true },
   endDate: { type: Date },
-  nextAppointmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' },
+  // nextAppointmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' },
+  nextAppointmentDate: { type: Date },
   notes: { type: String },
   createdAt: { type: Date, default: Date.now },
 });

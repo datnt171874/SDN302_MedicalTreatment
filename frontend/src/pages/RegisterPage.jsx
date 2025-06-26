@@ -13,7 +13,7 @@ import axios from 'axios';
 
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState({ userName: '', password: '', email: '' });
+  const [formData, setFormData] = useState({ userName: '', password: '', email: '', fullName: '' });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -99,6 +99,14 @@ const RegisterPage = () => {
                   label="Username"
                   value={formData.userName}
                   onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Fullname"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   required
                 />
                 <TextField

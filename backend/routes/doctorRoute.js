@@ -13,4 +13,5 @@ router.put("/:id", authenticate, doctorController.updateDoctor);
 router.put('/user/:userId', authenticate, doctorController.updateDoctor);
 router.delete("/:id", authenticate, doctorController.deleteDoctor);
 router.get("/search", authenticate, doctorController.searchDoctors);
+router.post('/book-slot', authenticate, doctorController.bookSlot);
 module.exports = router

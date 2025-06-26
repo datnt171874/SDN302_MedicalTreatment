@@ -31,6 +31,8 @@ const LoginPage = () => {
           navigate('/admin');
         } else if (roleName === 'Customer') {
           navigate('/user');
+        }else if (roleName === 'Staff') {
+          navigate('/staff-reminder');
         }else {
           alert('Unknown role');
         }
