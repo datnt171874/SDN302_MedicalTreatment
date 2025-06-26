@@ -114,7 +114,7 @@ const StaffReminders = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:3000/api/appointments?code=${appointmentCode}`,
+        `http://localhost:3000/api/appointment?code=${appointmentCode}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -145,7 +145,7 @@ const StaffReminders = () => {
       }
 
       await axios.put(
-        `http://localhost:3000/api/appointments/${appointmentId}`,
+        `http://localhost:3000/api/appointment/${appointmentId}`,
         { status: "Confirmed" },
         {
           headers: { Authorization: `Bearer ${token}` },

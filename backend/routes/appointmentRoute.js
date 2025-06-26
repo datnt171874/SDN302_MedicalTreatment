@@ -24,7 +24,7 @@ router.get('/appointments', appointmentController.getAppointmentsByDoctorAndDate
 router.get('/treatment-plan', treatmentPlanController.getAllTreatmentPlans);
 router.post('/treatment-plan', treatmentPlanController.createTreatmentPlan);
 
-router.put("/:id", appointmentController.updateAppointmentStatus);
+router.put("/:id", authenticate, appointmentController.updateAppointmentStatus);
 router.get("/", appointmentController.getAppointmentByCode);
 
 module.exports = router;
