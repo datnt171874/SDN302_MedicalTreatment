@@ -14,7 +14,7 @@ import DoctorPatients from "./pages/doctor/DoctorPatients";
 import DoctorPatientDetail from "./pages/doctor/DoctorPatientDetail";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import DoctorTreatmentPlan from "./pages/doctor/DoctorTreatmentPlan";
-import DoctorReminders from "./pages/doctor/DoctorReminders";
+import StaffReminders from "./pages/doctor/StaffReminders";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
 import UserDashboard from "./pages/UserDashboard";
 import Dashboard from "./pages/Dashboard";
@@ -25,6 +25,7 @@ import MessagesComments from "./pages/MessagesComments";
 import Account from "./pages/Account";
 import TreatmentPlanUser from "./pages/TreatmentPlanUser";
 import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
+import StaffDashboard from "./pages/StaffDashboard";
 
 function App() {
   const location = useLocation();
@@ -42,6 +43,8 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/doctor" element={<DoctorPage />} />
+        <Route path="/staff-dashboard" element={<StaffDashboard />} />
+        <Route path="/staff-reminder" element={<StaffReminders />} />
 
         {/* User Dashboard Routes */}
         <Route path="/user" element={<UserDashboard />}>
@@ -65,7 +68,7 @@ function App() {
         <Route path="/doctor/patient/:id" element={<DoctorPatientDetail />} />
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path="/doctor/treatments" element={<DoctorTreatmentPlan />} />
-        <Route path="/doctor/reminders" element={<DoctorReminders />} />
+        <Route path="/doctor/reminders" element={<StaffReminders />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
       </Routes>
     </Box>

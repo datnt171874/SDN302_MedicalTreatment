@@ -28,15 +28,15 @@ const DoctorAppointments = () => {
 
         const formattedAppointments = response.data.map((appt) => {
           const start = new Date(appt.appointmentDate);
-          const duration = appt.duration ? parseInt(appt.duration) : 30; // Default to 30 minutes if not specified
-          const end = new Date(start.getTime() + duration * 60000); // Add duration in minutes
+          const duration = appt.duration ? parseInt(appt.duration) : 30;
+          const end = new Date(start.getTime() + duration * 60000);
           return {
             id: appt._id,
             title: `${appt.appointmentType} - ${appt.userId?.fullName || 'Unknown Patient'}`,
             start,
             end,
             allDay: false,
-            resource: appt, // Store the full appointment object for details
+            resource: appt,
           };
         });
 
@@ -60,6 +60,17 @@ const DoctorAppointments = () => {
     setSelectedEvent(null);
   };
 
+  const eventPropGetter = (event, start, end, isSelected) => {
+    const style = {
+      backgroundColor: isSelected ? '#4A6D5A' : '#4A90E2',
+      color: 'white',
+      borderRadius: '5px',
+      border: 'none',
+      cursor: 'pointer',
+    };
+    return { style };
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5', py: 6 }}>
       <Container maxWidth="lg">
@@ -80,6 +91,11 @@ const DoctorAppointments = () => {
             style={{ height: 600, marginTop: '2rem' }}
             onSelectEvent={handleSelectEvent}
             selectable
+            eventPropGetter={eventPropGetter}
+            step={30} // 30-minute intervals
+            timeslots={1} // One slot per step
+            defaultView="week" // Use week view for better visibility of overlaps
+            views={['month', 'week', 'day']} // Allow switching views
           />
         </Paper>
       </Container>

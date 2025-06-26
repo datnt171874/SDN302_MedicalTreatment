@@ -83,18 +83,31 @@ const createAppointment = async (req, res) => {
 const getAllAppointments = async (req, res) => {
   try {
     let filter = {};
+    const { code } = req.query;
 
-    if (req.user.role === "Customer") {
-      filter = { userId: req.user.id };
+    if (code) {
+      const appointment = await Appointment.findOne({ appointmentCode: code })
+        .populate("userId", "fullName email")
+        .populate({
+          path: "doctorId",
+          populate: { path: "userId", select: "fullName phone email" },
+        });
+
+      if (!appointment) {
+        return res.status(404).json({ message: "Appointment not found" });
+      }
+      return res.json([appointment]);
     }
-    else if (req.user.roleName === "Doctor") {
+
+    if (req.user.roleName === "Customer") {
+      filter = { userId: req.user.id };
+    } else if (req.user.roleName === "Doctor") {
       const doctor = await Doctor.findOne({ userId: req.user.id });
       if (!doctor) {
         return res.status(404).json({ message: "Doctor profile not found" });
       }
       filter = { doctorId: doctor._id };
     }
-    // Nếu là Admin trả về tất cả
 
     const appointments = await Appointment.find(filter)
       .populate("userId", "fullName email")
@@ -105,9 +118,8 @@ const getAllAppointments = async (req, res) => {
 
     res.json(appointments);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Error fetching appointments", error: err.message });
+    console.error("Error fetching appointments:", err);
+    res.status(500).json({ message: "Error fetching appointments", error: err.message });
   }
 };
 
@@ -138,9 +150,111 @@ const getAppointmentById = async (req, res) => {
       .json({ message: "Error fetching appointment", error: err.message });
   }
 };
+// const getAppointmentsByDoctorAndDate = async (req, res) => {
+//   try {
+//     const { doctorId, date } = req.query;
+//     const startOfDay = new Date(date).setHours(0, 0, 0, 0);
+//     const endOfDay = new Date(date).setHours(23, 59, 59, 999);
+//     const appointments = await Appointment.find({
+//       doctorId,
+//       appointmentDate: { $gte: startOfDay, $lte: endOfDay }
+//     }).populate('userId', 'fullName');
+//     res.json(appointments);
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error fetching appointments', error: err.message });
+//   }
+// };
+// const getByDoctorAndDate = async (req, res) => {
+//   try {
+//     const { doctorId, date } = req.query;
+//     const appointments = await Appointment.find({
+//       doctorId,
+//       appointmentDate: new Date(date).toISOString().split('T')[0]
+//     });
+//     res.status(200).json(appointments);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching appointments", error: error.message });
+//   }
+// };
+const getAppointmentsByDoctorAndDate = async (req, res) => {
+  try {
+    const { doctorId, date } = req.query;
 
+    // if (!doctorId || !date) {
+    //   return res.status(400).json({ message: "Doctor ID and date are required" });
+    // }
+
+    const startOfDay = new Date(date).setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date).setHours(23, 59, 59, 999);
+
+    const appointments = await Appointment.find({
+      doctorId,
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+    }).populate("userId", "fullName");
+
+    res.json(appointments);
+  } catch (err) {
+    console.error("Error fetching appointments:", err);
+    res.status(500).json({ message: "Error fetching appointments", error: err.message });
+  }
+};
+const updateAppointmentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!["Pending", "Confirmed", "Completed", "Cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    if (!["Staff", "Admin", "Doctor"].includes(req.user.roleName)) {
+      return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
+    }
+
+    appointment.status = status;
+    await appointment.save();
+
+    res.json({ message: "Appointment status updated", appointment });
+  } catch (err) {
+    console.error("Error updating appointment status:", err);
+    res.status(500).json({ message: "Error updating appointment status", error: err.message });
+  }
+};
+const getAppointmentByCode = async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ message: "Appointment code is required" });
+    }
+
+    const appointment = await Appointment.findOne({ appointmentCode: code })
+      .populate("userId", "fullName email")
+      .populate({
+        path: "doctorId",
+        populate: { path: "userId", select: "fullName phone email" },
+      });
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    res.json([appointment]); 
+  } catch (err) {
+    console.error("Error fetching appointment by code:", err);
+    res.status(500).json({ message: "Error fetching appointment", error: err.message });
+  }
+};
 module.exports = {
   createAppointment,
   getAllAppointments,
   getAppointmentById,
+  getAppointmentsByDoctorAndDate,
+  updateAppointmentStatus,
+  getAppointmentByCode
 };

@@ -37,7 +37,7 @@ const HeaderDoctor = () => {
   const menuItems = [
     { text: 'Trang tổng quan', path: '/doctor/dashboard', icon: <DashboardIcon /> },
     { text: 'Quản lý bệnh nhân', path: '/doctor/patients', icon: <PeopleIcon /> },
-    { text: 'Hồ sơ điều trị', path: '/doctor/treatments', icon: <FolderSharedIcon /> },
+    { text: 'Phác đồ điều trị', path: '/doctor/treatments', icon: <FolderSharedIcon /> },
     { text: 'Lịch hẹn của tôi', path: '/doctor/appointments', icon: <EventNoteIcon /> },
     { text: 'Lời nhắc', path: '/doctor/reminders', icon: <NotificationsActiveIcon /> },
     { text: 'Hồ sơ bác sĩ', path: '/doctor/profile', icon: <AccountCircleIcon /> },
@@ -50,7 +50,7 @@ const HeaderDoctor = () => {
         <Typography
           variant="h6"
           sx={{ fontWeight: 'bold', cursor: 'pointer' }}
-          onClick={() => navigate('/doctor/dashboard')}
+          onClick={() => navigate('/doctor')}
         >
           MEDICAL TREATMENT - DOCTOR
         </Typography>
