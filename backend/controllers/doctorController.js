@@ -100,6 +100,7 @@ const getDoctorByUserId = async (req, res) => {
 const updateDoctor = async (req, res) => {
   try {
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (!["Admin", "Manager"].includes(req.user?.roleName)) {
       return res.status(403).json({
         message: "Forbidden: Only Admin or Manager can update doctors",
@@ -124,6 +125,14 @@ const updateDoctor = async (req, res) => {
 
     const doctor = await Doctor.findById(req.params.id).populate('userId');
 >>>>>>> datnt
+=======
+    // if (!["Admin", "Manager", "Doctor"].includes(req.user?.Role)) {
+    //   return res.status(403).json({ message: "Forbidden: Only Admin or Manager or Doctor can update doctors" });
+    // }
+    console.log("Update request body:", JSON.stringify(req.body, null, 2));
+
+    const doctor = await Doctor.findById(req.params.id).populate('userId');
+>>>>>>> 6ab6a0fa3d20b35c1af12fd7e7bcaaa82b01b3bb
 
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found" });
@@ -145,16 +154,22 @@ const updateDoctor = async (req, res) => {
         email,
         phone,
 <<<<<<< HEAD
+<<<<<<< HEAD
         address,
       });
 =======
         address
       }, { new: true });
 >>>>>>> datnt
+=======
+        address
+      }, { new: true });
+>>>>>>> 6ab6a0fa3d20b35c1af12fd7e7bcaaa82b01b3bb
     }
 
     res.json(doctor);
   } catch (error) {
+<<<<<<< HEAD
 <<<<<<< HEAD
     res
       .status(500)
@@ -164,6 +179,11 @@ const updateDoctor = async (req, res) => {
     
     res.status(500).json({ message: "Error updating doctor", error: error.message });
 >>>>>>> datnt
+=======
+    console.log("Update Doctor Error:", error);
+    
+    res.status(500).json({ message: "Error updating doctor", error: error.message });
+>>>>>>> 6ab6a0fa3d20b35c1af12fd7e7bcaaa82b01b3bb
   }
 };
 

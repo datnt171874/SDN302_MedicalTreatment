@@ -29,9 +29,13 @@ import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 function App() {
   const location = useLocation();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   // const isDoctorRoute = location.pathname.startsWith("/doctor");
 >>>>>>> datnt
+=======
+  // const isDoctorRoute = location.pathname.startsWith("/doctor");
+>>>>>>> 6ab6a0fa3d20b35c1af12fd7e7bcaaa82b01b3bb
 
   return (
     <Box sx={{ backgroundColor: "#EAE7D6", minHeight: "100vh" }}>

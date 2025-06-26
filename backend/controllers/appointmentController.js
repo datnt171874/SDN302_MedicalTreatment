@@ -3,8 +3,8 @@ const Doctor = require("../models/Doctor");
 const Pricing = require("../models/Pricing");
 
 const generateAppointmentCode = () => {
-  return `C-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
-};
+  return `C-${Math.floor(1000 + Math.random() * 9000)}`;
+};       //${Date.now()}-
 
 const createAppointment = async (req, res) => {
   try {
@@ -87,7 +87,14 @@ const getAllAppointments = async (req, res) => {
     if (req.user.role === "Customer") {
       filter = { userId: req.user.id };
     }
-    // Nếu là Admin hoặc Doctor, trả về tất cả
+    else if (req.user.roleName === "Doctor") {
+      const doctor = await Doctor.findOne({ userId: req.user.id });
+      if (!doctor) {
+        return res.status(404).json({ message: "Doctor profile not found" });
+      }
+      filter = { doctorId: doctor._id };
+    }
+    // Nếu là Admin trả về tất cả
 
     const appointments = await Appointment.find(filter)
       .populate("userId", "fullName email")

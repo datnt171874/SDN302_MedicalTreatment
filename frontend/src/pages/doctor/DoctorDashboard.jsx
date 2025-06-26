@@ -1,9 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, Paper, Typography, Button } from '@mui/material';
 import { People, Event, Notifications } from '@mui/icons-material';
-
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import moment from 'moment';
 
 const DoctorDashboard = () => {
+  const [todayAppointmentsCount, setTodayAppointmentsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('No authentication token found');
+          setLoading(false);
+          return;
+        }
+
+        const response = await axios.get('http://localhost:3000/api/appointment/appointment', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const today = moment().startOf('day');
+        const todayCount = response.data.filter((appt) =>
+          moment(appt.appointmentDate).isSame(today, 'day')
+        ).length;
+
+        setTodayAppointmentsCount(todayCount);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+        setError(err.response?.data?.message || 'Failed to fetch appointments');
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
       <Box sx={{ p: 4 }}>
@@ -29,8 +67,20 @@ const DoctorDashboard = () => {
                 <Event color="action" />
                 <Typography variant="h6" fontWeight={600}>Cuộc hẹn hôm nay</Typography>
               </Box>
-              <Typography variant="h4" sx={{ mt: 2 }}>5</Typography>
-              <Button variant="text" sx={{ mt: 1 }}>Xem lịch hẹn</Button>
+              {loading ? (
+                <Typography variant="h4" sx={{ mt: 2 }}>Loading...</Typography>
+              ) : error ? (
+                <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>
+              ) : (
+                <Typography variant="h4" sx={{ mt: 2 }}>{todayAppointmentsCount}</Typography>
+              )}
+              <Button
+                variant="text"
+                sx={{ mt: 1 }}
+                onClick={() => navigate('/doctor-appointments')}
+              >
+                Xem lịch hẹn
+              </Button>
             </Paper>
           </Grid>
 
