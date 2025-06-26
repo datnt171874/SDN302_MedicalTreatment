@@ -202,9 +202,14 @@ const updateAppointmentStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+    const { roleName, id: userId } = req.user;
 
-    if (!["Pending", "Confirmed", "Completed", "Cancelled"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+    if (!id || !status) {
+      return res.status(400).json({ message: "Missing appointment ID or status" });
+    }
+
+    if (!["Staff", "Doctor"].includes(roleName)) {
+      return res.status(403).json({ message: "Forbidden: Only staff or doctors can update appointment status" });
     }
 
     const appointment = await Appointment.findById(id);
@@ -212,17 +217,17 @@ const updateAppointmentStatus = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    if (!["Staff", "Admin", "Doctor"].includes(req.user.roleName)) {
-      return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
-    }
-
     appointment.status = status;
     await appointment.save();
 
-    res.json({ message: "Appointment status updated", appointment });
+    const updatedAppointment = await Appointment.findById(id)
+      .populate("userId", "fullName email")
+      .populate("doctorId", "userId");
+
+    res.json({ message: "Appointment updated successfully", appointment: updatedAppointment });
   } catch (err) {
     console.error("Error updating appointment status:", err);
-    res.status(500).json({ message: "Error updating appointment status", error: err.message });
+    res.status(500).json({ message: "Failed to update appointment status", error: err.message });
   }
 };
 const getAppointmentByCode = async (req, res) => {
