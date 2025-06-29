@@ -45,11 +45,9 @@ const createMedicalRecord = async (req, res) => {
     }
 
     if (req.user.roleName !== "Doctor") {
-      return res
-        .status(403)
-        .json({
-          message: "Forbidden: Only doctors can create medical records",
-        });
+      return res.status(403).json({
+        message: "Forbidden: Only doctors can create medical records",
+      });
     }
 
     const newMedicalRecord = new MedicalRecord({
@@ -73,12 +71,10 @@ const createMedicalRecord = async (req, res) => {
         "regimen startDate endDate nextAppointmentDate notes"
       );
 
-    res
-      .status(201)
-      .json({
-        message: "Medical record created",
-        medicalRecord: populatedRecord,
-      });
+    res.status(201).json({
+      message: "Medical record created",
+      medicalRecord: populatedRecord,
+    });
   } catch (err) {
     console.error("Error creating medical record:", err);
     res
@@ -98,11 +94,31 @@ const getMedicalRecordsByUser = async (req, res) => {
     }
 
     let filter = {};
+
+    // Customer can only see their own records
     if (req.user.roleName === "Customer") {
       filter = { userId: req.user.id };
-    } else if (req.user.roleName === "Doctor" && userId) {
-      filter = { userId };
-    } else if (!["Admin"].includes(req.user.roleName)) {
+    }
+    // Doctor can see all records or specific user records
+    else if (req.user.roleName === "Doctor") {
+      if (userId) {
+        // If userId is provided, get records for that specific user
+        filter = { userId };
+      } else {
+        // If no userId provided, get all records (doctor can see all)
+        filter = {};
+      }
+    }
+    // Admin can see all records
+    else if (req.user.roleName === "Admin") {
+      if (userId) {
+        filter = { userId };
+      } else {
+        filter = {};
+      }
+    }
+    // Other roles are not allowed
+    else {
       return res
         .status(403)
         .json({ message: "Forbidden: Insufficient permissions" });
@@ -125,7 +141,40 @@ const getMedicalRecordsByUser = async (req, res) => {
   }
 };
 
+const getAllMedicalRecordsForDoctor = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No user authenticated" });
+    }
+
+    if (req.user.roleName !== "Doctor") {
+      return res
+        .status(403)
+        .json({ message: "Forbidden: Only doctors can access this endpoint" });
+    }
+
+    const medicalRecords = await MedicalRecord.find({})
+      .populate("userId", "fullName email phone")
+      .populate("appointmentId", "appointmentDate appointmentType")
+      .populate(
+        "treatmentPlanId",
+        "regimen startDate endDate nextAppointmentDate notes"
+      )
+      .sort({ createdAt: -1 }); // Sort by newest first
+
+    res.json(medicalRecords);
+  } catch (err) {
+    console.error("Error fetching all medical records:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching medical records", error: err.message });
+  }
+};
+
 module.exports = {
   createMedicalRecord,
   getMedicalRecordsByUser,
+  getAllMedicalRecordsForDoctor,
 };
