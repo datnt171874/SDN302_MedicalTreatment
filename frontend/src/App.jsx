@@ -26,6 +26,7 @@ import Account from "./pages/Account";
 import TreatmentPlanUser from "./pages/TreatmentPlanUser";
 import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
 import StaffDashboard from "./pages/StaffDashboard";
+import DoctorMedicalRecords from "./pages/doctor/DoctorMedicalRecords";
 
 function App() {
   const location = useLocation();
@@ -70,6 +71,10 @@ function App() {
         <Route path="/doctor/treatments" element={<DoctorTreatmentPlan />} />
         <Route path="/doctor/reminders" element={<StaffReminders />} />
         <Route path="/doctor/profile" element={<DoctorProfile />} />
+        <Route
+          path="/doctor/medical-records"
+          element={<DoctorMedicalRecords />}
+        />
       </Routes>
     </Box>
   );

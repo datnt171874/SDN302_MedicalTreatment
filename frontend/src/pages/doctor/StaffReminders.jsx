@@ -19,6 +19,7 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
+import DoctorLayout from "../../components/DoctorLayout";
 
 const StaffReminders = () => {
   const [reminders, setReminders] = useState([]);
@@ -44,9 +45,12 @@ const StaffReminders = () => {
         }
 
         // Fetch reminders
-        const remindersResponse = await axios.get("http://localhost:3000/api/reminders", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const remindersResponse = await axios.get(
+          "http://localhost:3000/api/reminders",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setReminders(remindersResponse.data);
 
         // Fetch today's appointments
@@ -59,7 +63,6 @@ const StaffReminders = () => {
         );
         setAppointments(appointmentsResponse.data);
         console.log("Today's appointments:", appointmentsResponse.data);
-        
       } catch (err) {
         setMessage("Failed to fetch data");
       }
@@ -95,7 +98,12 @@ const StaffReminders = () => {
       );
 
       setReminders([...reminders, response.data.reminder]);
-      setNewReminder({ patientId: "", type: "Revisit", content: "", status: "Pending" });
+      setNewReminder({
+        patientId: "",
+        type: "Revisit",
+        content: "",
+        status: "Pending",
+      });
       setMessage("Reminder created successfully");
     } catch (err) {
       setMessage("Error creating reminder");
@@ -164,175 +172,181 @@ const StaffReminders = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", p: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom color="black">
-        Quản lý lời nhắc và Check-in
-      </Typography>
-
-      {/* Check-in Section */}
-      <Paper sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
-          Check-in Bệnh nhân
+    <DoctorLayout activeItem="Reminders">
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom color="black">
+          Quản lý lời nhắc và Check-in
         </Typography>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={8}>
-            <TextField
-              fullWidth
-              label="Mã cuộc hẹn"
-              value={appointmentCode}
-              onChange={(e) => setAppointmentCode(e.target.value)}
-              disabled={loading}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleSearchAppointment}
-              disabled={loading}
-            >
-              {loading ? "Đang tìm..." : "Tìm kiếm"}
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
-      {/* Reminder Section */}
-      <Paper sx={{ p: 3, mb: 4 }}>
+        {/* Check-in Section */}
+        <Paper sx={{ p: 3, mb: 4 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
+            Check-in Bệnh nhân
+          </Typography>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+                label="Mã cuộc hẹn"
+                value={appointmentCode}
+                onChange={(e) => setAppointmentCode(e.target.value)}
+                disabled={loading}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handleSearchAppointment}
+                disabled={loading}
+              >
+                {loading ? "Đang tìm..." : "Tìm kiếm"}
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Reminder Section */}
+        <Paper sx={{ p: 3, mb: 4 }}>
+          <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
+            Gửi lời nhắc cho bệnh nhân
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>Mã bệnh nhân</InputLabel>
+                <Select
+                  name="patientId"
+                  value={newReminder.patientId}
+                  onChange={handleReminderChange}
+                  label="Mã bệnh nhân"
+                >
+                  <MenuItem value="BN001">Nguyễn Văn A (BN001)</MenuItem>
+                  <MenuItem value="BN002">Trần Thị B (BN002)</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <FormControl fullWidth>
+                <InputLabel>Loại lời nhắc</InputLabel>
+                <Select
+                  name="type"
+                  value={newReminder.type}
+                  onChange={handleReminderChange}
+                  label="Loại lời nhắc"
+                >
+                  <MenuItem value="Revisit">Tái khám</MenuItem>
+                  <MenuItem value="Medication">Thuốc</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                label="Nội dung lời nhắc"
+                name="content"
+                value={newReminder.content}
+                onChange={handleReminderChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handleCreateReminder}
+                sx={{ height: "100%" }}
+              >
+                Gửi
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Appointments Table */}
         <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
-          Gửi lời nhắc cho bệnh nhân
+          Danh sách cuộc hẹn hôm nay
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel>Mã bệnh nhân</InputLabel>
-              <Select
-                name="patientId"
-                value={newReminder.patientId}
-                onChange={handleReminderChange}
-                label="Mã bệnh nhân"
-              >
-                <MenuItem value="BN001">Nguyễn Văn A (BN001)</MenuItem>
-                <MenuItem value="BN002">Trần Thị B (BN002)</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <FormControl fullWidth>
-              <InputLabel>Loại lời nhắc</InputLabel>
-              <Select
-                name="type"
-                value={newReminder.type}
-                onChange={handleReminderChange}
-                label="Loại lời nhắc"
-              >
-                <MenuItem value="Revisit">Tái khám</MenuItem>
-                <MenuItem value="Medication">Thuốc</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <TextField
-              fullWidth
-              label="Nội dung lời nhắc"
-              name="content"
-              value={newReminder.content}
-              onChange={handleReminderChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={handleCreateReminder}
-              sx={{ height: "100%" }}
-            >
-              Gửi
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      {/* Appointments Table */}
-      <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
-        Danh sách cuộc hẹn hôm nay
-      </Typography>
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Mã cuộc hẹn</TableCell>
-              <TableCell>Bệnh nhân</TableCell>
-              <TableCell>Bác sĩ</TableCell>
-              <TableCell>Thời gian</TableCell>
-              <TableCell>Trạng thái</TableCell>
-              <TableCell>Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {appointments.map((appt) => (
-              <TableRow key={appt._id}>
-                <TableCell>{appt.appointmentCode}</TableCell>
-                <TableCell>{appt.userId?.fullName || "Không rõ"}</TableCell>
-                <TableCell>{appt.doctorId?.userId?.fullName || "Không rõ"}</TableCell>
-                <TableCell>
-                  {new Date(appt.appointmentDate).toLocaleString("vi-VN")}
-                </TableCell>
-                <TableCell>{appt.status}</TableCell>
-                <TableCell>
-                  {appt.status === "Pending" && (
-                    <Button
-                      variant="contained"
-                      color="success"
-                      size="small"
-                      onClick={() => handleConfirmAppointment(appt._id)}
-                    >
-                      Xác nhận
-                    </Button>
-                  )}
-                </TableCell>
+        <TableContainer component={Paper} sx={{ mb: 4 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Mã cuộc hẹn</TableCell>
+                <TableCell>Bệnh nhân</TableCell>
+                <TableCell>Bác sĩ</TableCell>
+                <TableCell>Thời gian</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Hành động</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {appointments.map((appt) => (
+                <TableRow key={appt._id}>
+                  <TableCell>{appt.appointmentCode}</TableCell>
+                  <TableCell>{appt.userId?.fullName || "Không rõ"}</TableCell>
+                  <TableCell>
+                    {appt.doctorId?.userId?.fullName || "Không rõ"}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(appt.appointmentDate).toLocaleString("vi-VN")}
+                  </TableCell>
+                  <TableCell>{appt.status}</TableCell>
+                  <TableCell>
+                    {appt.status === "Pending" && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        onClick={() => handleConfirmAppointment(appt._id)}
+                      >
+                        Xác nhận
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      {/* Reminders Table */}
-      <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
-        Danh sách lời nhắc đã tạo
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Mã bệnh nhân</TableCell>
-              <TableCell>Loại</TableCell>
-              <TableCell>Nội dung</TableCell>
-              <TableCell>Trạng thái</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reminders.map((reminder) => (
-              <TableRow key={reminder._id || reminder.id}>
-                <TableCell>{reminder.userId?.fullName || reminder.patientId}</TableCell>
-                <TableCell>{reminder.type}</TableCell>
-                <TableCell>{reminder.message || reminder.content}</TableCell>
-                <TableCell>{reminder.status}</TableCell>
+        {/* Reminders Table */}
+        <Typography variant="h6" fontWeight="bold" gutterBottom color="black">
+          Danh sách lời nhắc đã tạo
+        </Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Mã bệnh nhân</TableCell>
+                <TableCell>Loại</TableCell>
+                <TableCell>Nội dung</TableCell>
+                <TableCell>Trạng thái</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {reminders.map((reminder) => (
+                <TableRow key={reminder._id || reminder.id}>
+                  <TableCell>
+                    {reminder.userId?.fullName || reminder.patientId}
+                  </TableCell>
+                  <TableCell>{reminder.type}</TableCell>
+                  <TableCell>{reminder.message || reminder.content}</TableCell>
+                  <TableCell>{reminder.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-      {message && (
-        <Alert
-          severity={message.includes("successfully") ? "success" : "error"}
-          sx={{ mt: 2 }}
-        >
-          {message}
-        </Alert>
-      )}
-    </Box>
+        {message && (
+          <Alert
+            severity={message.includes("successfully") ? "success" : "error"}
+            sx={{ mt: 2 }}
+          >
+            {message}
+          </Alert>
+        )}
+      </Box>
+    </DoctorLayout>
   );
 };
 
