@@ -8,5 +8,11 @@ export const medicalRecordService = {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
+  getAll: async () => {
+    const token = localStorage.getItem("token");
+    return axios.get(API_URL, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  },
   // Có thể bổ sung các hàm khác nếu cần
 };
