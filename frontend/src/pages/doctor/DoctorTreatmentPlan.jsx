@@ -28,6 +28,7 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
 import dayjs from "dayjs";
+import DoctorLayout from "../../components/DoctorLayout";
 
 const DoctorTreatmentPlan = () => {
   const [treatmentPlans, setTreatmentPlans] = useState([]);
@@ -58,14 +59,20 @@ const DoctorTreatmentPlan = () => {
         setLoading(true);
         if (!token) throw new Error("No authentication token found");
 
-        const plansRes = await axios.get("http://localhost:3000/api/appointment/treatment-plan", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const plansRes = await axios.get(
+          "http://localhost:3000/api/appointment/treatment-plan",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setTreatmentPlans(plansRes.data);
 
-        const patientsRes = await axios.get("http://localhost:3000/api/users?role=Customer", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const patientsRes = await axios.get(
+          "http://localhost:3000/api/users?role=Customer",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setPatients(patientsRes.data);
 
         setLoading(false);
@@ -97,7 +104,9 @@ const DoctorTreatmentPlan = () => {
         setMedicalRecords(recordsRes.data);
       } catch (err) {
         console.error("Error fetching medical records:", err);
-        setError(err.response?.data?.message || "Failed to fetch medical records");
+        setError(
+          err.response?.data?.message || "Failed to fetch medical records"
+        );
       }
     };
 
@@ -111,12 +120,14 @@ const DoctorTreatmentPlan = () => {
       setFormData({
         userId: plan.userId._id || "",
         regimen: plan.regimen || "",
-        startDate: plan.startDate ? dayjs(plan.startDate).format("YYYY-MM-DD") : "",
+        startDate: plan.startDate
+          ? dayjs(plan.startDate).format("YYYY-MM-DD")
+          : "",
         endDate: plan.endDate ? dayjs(plan.endDate).format("YYYY-MM-DD") : "",
         nextAppointmentDate: plan.nextAppointmentDate
           ? dayjs(plan.nextAppointmentDate).format("YYYY-MM-DD")
           : "",
-        medicalRecordId: "", 
+        medicalRecordId: "",
         notes: plan.notes || "",
       });
     } else {
@@ -201,185 +212,228 @@ const DoctorTreatmentPlan = () => {
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error deleting treatment plan:", err);
-      setError(err.response?.data?.message || "Failed to delete treatment plan");
+      setError(
+        err.response?.data?.message || "Failed to delete treatment plan"
+      );
     }
   };
 
   if (loading)
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
-      </Box>
+      <DoctorLayout activeItem="Treatment Plans">
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      </DoctorLayout>
     );
 
   return (
-    <Box sx={{ bgcolor: "#f5f5f5", py: 6, minHeight: "100vh" }}>
-      <Container maxWidth="lg">
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h4" fontWeight="bold">
-              Quản lý Phác đồ Điều trị
-            </Typography>
-            <Button variant="contained" color="primary" onClick={() => handleOpenDialog()}>
-              Tạo Phác đồ Mới
-            </Button>
-          </Box>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Bệnh nhân</TableCell>
-                  <TableCell>Phác đồ</TableCell>
-                  <TableCell>Ngày bắt đầu</TableCell>
-                  <TableCell>Ngày kết thúc</TableCell>
-                  <TableCell>Cuộc hẹn tiếp theo</TableCell>
-                  <TableCell>Hành động</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {treatmentPlans.map((plan) => (
-                  <TableRow key={plan._id}>
-                    <TableCell>{plan.userId?.fullName || "N/A"}</TableCell>
-                    <TableCell>{plan.regimen}</TableCell>
-                    <TableCell>
-                      {plan.startDate ? dayjs(plan.startDate).format("DD/MM/YYYY") : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {plan.endDate ? dayjs(plan.endDate).format("DD/MM/YYYY") : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {plan.nextAppointmentDate
-                        ? dayjs(plan.nextAppointmentDate).format("DD/MM/YYYY")
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleOpenDialog(plan)}>
-                        <Edit />
-                      </IconButton>
-                      <IconButton onClick={() => handleDelete(plan._id)}>
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-
-        {/* Dialog for Create/Edit Treatment Plan */}
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-          <DialogTitle>{isEditing ? "Chỉnh sửa Phác đồ" : "Tạo Phác đồ Mới"}</DialogTitle>
-          <DialogContent>
-            <FormControl fullWidth sx={{ mt: 2 }}>
-              <InputLabel id="patient-label">Bệnh nhân</InputLabel>
-              <Select
-                labelId="patient-label"
-                value={formData.userId}
-                label="Bệnh nhân"
-                onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-              >
-                {patients.map((patient) => (
-                  <MenuItem key={patient._id} value={patient._id}>
-                    {patient.fullName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth sx={{ mt: 2 }}>
-              <InputLabel id="regimen-label">Phác đồ</InputLabel>
-              <Select
-                labelId="regimen-label"
-                value={formData.regimen}
-                label="Phác đồ"
-                onChange={(e) => setFormData({ ...formData, regimen: e.target.value })}
-              >
-                <MenuItem value="TDF + 3TC + DTG">TDF + 3TC + DTG</MenuItem>
-                <MenuItem value="AZT + 3TC + EFV">AZT + 3TC + EFV</MenuItem>
-                <MenuItem value="Custom">Tùy chỉnh</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              fullWidth
-              label="Ngày bắt đầu"
-              type="date"
-              value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-              sx={{ mt: 2 }}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              fullWidth
-              label="Ngày kết thúc"
-              type="date"
-              value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-              sx={{ mt: 2 }}
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              fullWidth
-              label="Cuộc hẹn tiếp theo"
-              type="date"
-              value={formData.nextAppointmentDate}
-              onChange={(e) =>
-                setFormData({ ...formData, nextAppointmentDate: e.target.value })
-              }
-              sx={{ mt: 2 }}
-              InputLabelProps={{ shrink: true }}
-            />
-            <FormControl fullWidth sx={{ mt: 2 }}>
-              <InputLabel id="medical-record-label">Bệnh án</InputLabel>
-              <Select
-                labelId="medical-record-label"
-                value={formData.medicalRecordId}
-                label="Bệnh án"
-                onChange={(e) =>
-                  setFormData({ ...formData, medicalRecordId: e.target.value })
-                }
-              >
-                <MenuItem value="">Không chọn</MenuItem>
-                {medicalRecords.map((record) => (
-                  <MenuItem key={record._id} value={record._id}>
-                    {record.diagnosis} ({dayjs(record.recordDate).format("DD/MM/YYYY")})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              fullWidth
-              label="Ghi chú"
-              multiline
-              rows={4}
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              sx={{ mt: 2 }}
-            />
-            {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
-                {error}
+    <DoctorLayout activeItem="Treatment Plans">
+      <Box sx={{ bgcolor: "#f5f5f5", py: 6, minHeight: "100vh" }}>
+        <Container maxWidth="lg">
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <Paper elevation={3} sx={{ p: 4 }}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={3}
+            >
+              <Typography variant="h4" fontWeight="bold">
+                Quản lý Phác đồ Điều trị
               </Typography>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Hủy</Button>
-            <Button onClick={handleSave} variant="contained" color="primary">
-              Lưu
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
-    </Box>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleOpenDialog()}
+              >
+                Tạo Phác đồ Mới
+              </Button>
+            </Box>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Bệnh nhân</TableCell>
+                    <TableCell>Phác đồ</TableCell>
+                    <TableCell>Ngày bắt đầu</TableCell>
+                    <TableCell>Ngày kết thúc</TableCell>
+                    <TableCell>Cuộc hẹn tiếp theo</TableCell>
+                    <TableCell>Hành động</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {treatmentPlans.map((plan) => (
+                    <TableRow key={plan._id}>
+                      <TableCell>{plan.userId?.fullName || "N/A"}</TableCell>
+                      <TableCell>{plan.regimen}</TableCell>
+                      <TableCell>
+                        {plan.startDate
+                          ? dayjs(plan.startDate).format("DD/MM/YYYY")
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {plan.endDate
+                          ? dayjs(plan.endDate).format("DD/MM/YYYY")
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        {plan.nextAppointmentDate
+                          ? dayjs(plan.nextAppointmentDate).format("DD/MM/YYYY")
+                          : "N/A"}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleOpenDialog(plan)}>
+                          <Edit />
+                        </IconButton>
+                        <IconButton onClick={() => handleDelete(plan._id)}>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+
+          {/* Dialog for Create/Edit Treatment Plan */}
+          <Dialog
+            open={openDialog}
+            onClose={handleCloseDialog}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>
+              {isEditing ? "Chỉnh sửa Phác đồ" : "Tạo Phác đồ Mới"}
+            </DialogTitle>
+            <DialogContent>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="patient-label">Bệnh nhân</InputLabel>
+                <Select
+                  labelId="patient-label"
+                  value={formData.userId}
+                  label="Bệnh nhân"
+                  onChange={(e) =>
+                    setFormData({ ...formData, userId: e.target.value })
+                  }
+                >
+                  {patients.map((patient) => (
+                    <MenuItem key={patient._id} value={patient._id}>
+                      {patient.fullName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="regimen-label">Phác đồ</InputLabel>
+                <Select
+                  labelId="regimen-label"
+                  value={formData.regimen}
+                  label="Phác đồ"
+                  onChange={(e) =>
+                    setFormData({ ...formData, regimen: e.target.value })
+                  }
+                >
+                  <MenuItem value="TDF + 3TC + DTG">TDF + 3TC + DTG</MenuItem>
+                  <MenuItem value="AZT + 3TC + EFV">AZT + 3TC + EFV</MenuItem>
+                  <MenuItem value="Custom">Tùy chỉnh</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                fullWidth
+                label="Ngày bắt đầu"
+                type="date"
+                value={formData.startDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, startDate: e.target.value })
+                }
+                sx={{ mt: 2 }}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                fullWidth
+                label="Ngày kết thúc"
+                type="date"
+                value={formData.endDate}
+                onChange={(e) =>
+                  setFormData({ ...formData, endDate: e.target.value })
+                }
+                sx={{ mt: 2 }}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                fullWidth
+                label="Cuộc hẹn tiếp theo"
+                type="date"
+                value={formData.nextAppointmentDate}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    nextAppointmentDate: e.target.value,
+                  })
+                }
+                sx={{ mt: 2 }}
+                InputLabelProps={{ shrink: true }}
+              />
+              <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="medical-record-label">Bệnh án</InputLabel>
+                <Select
+                  labelId="medical-record-label"
+                  value={formData.medicalRecordId}
+                  label="Bệnh án"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      medicalRecordId: e.target.value,
+                    })
+                  }
+                >
+                  <MenuItem value="">Không chọn</MenuItem>
+                  {medicalRecords.map((record) => (
+                    <MenuItem key={record._id} value={record._id}>
+                      {record.diagnosis} (
+                      {dayjs(record.recordDate).format("DD/MM/YYYY")})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                fullWidth
+                label="Ghi chú"
+                multiline
+                rows={4}
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                sx={{ mt: 2 }}
+              />
+              {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Hủy</Button>
+              <Button onClick={handleSave} variant="contained" color="primary">
+                Lưu
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Container>
+      </Box>
+    </DoctorLayout>
   );
 };
 
