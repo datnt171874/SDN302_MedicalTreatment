@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:3000/api/appointment/appointment";
+const API_URL = "http://localhost:3000/api/appointment";
 
 export const appointmentService = {
   create: async (data) => {
@@ -13,7 +13,7 @@ export const appointmentService = {
     if (!token) {
       throw new Error("No authentication token found");
     }
-    return axios.get(API_URL, {
+    return axios.get(`${API_URL}/appointment`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
@@ -55,7 +55,7 @@ export const appointmentService = {
     }
     const response = await axios.get(`${API_URL}/appointments`, {
       headers: { Authorization: `Bearer ${token}` },
-      params: { status: "confirmed" },
+      params: { status: "Confirmed" },
     });
     return response.data;
   },

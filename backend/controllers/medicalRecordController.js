@@ -173,8 +173,100 @@ const getAllMedicalRecordsForDoctor = async (req, res) => {
   }
 };
 
+const updateMedicalRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { diagnosis, prescription, notes, recordDate, treatmentPlanId } =
+      req.body;
+
+    if (req.user.roleName !== "Doctor") {
+      return res.status(403).json({
+        message: "Forbidden: Only doctors can update medical records",
+      });
+    }
+
+    // Validate prescription array
+    if (
+      !prescription ||
+      !Array.isArray(prescription) ||
+      prescription.length === 0
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Prescription must be a non-empty array" });
+    }
+    for (let i = 0; i < prescription.length; i++) {
+      const med = prescription[i];
+      if (
+        !med.medicationName ||
+        !med.dosage ||
+        !med.frequency ||
+        !med.duration
+      ) {
+        return res.status(400).json({
+          message: `Prescription item ${
+            i + 1
+          } is missing required fields: medicationName, dosage, frequency, or duration`,
+        });
+      }
+    }
+
+    const updated = await MedicalRecord.findByIdAndUpdate(
+      id,
+      {
+        diagnosis,
+        prescription,
+        notes,
+        recordDate,
+        treatmentPlanId: treatmentPlanId || null,
+      },
+      { new: true, runValidators: true }
+    )
+      .populate("userId", "fullName email")
+      .populate("appointmentId", "appointmentDate appointmentType")
+      .populate(
+        "treatmentPlanId",
+        "regimen startDate endDate nextAppointmentDate notes"
+      );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Medical record not found" });
+    }
+
+    res.json({ message: "Medical record updated", medicalRecord: updated });
+  } catch (err) {
+    console.error("Error updating medical record:", err);
+    res
+      .status(500)
+      .json({ message: "Error updating medical record", error: err.message });
+  }
+};
+
+const deleteMedicalRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!["Doctor", "Admin"].includes(req.user.roleName)) {
+      return res.status(403).json({
+        message: "Forbidden: Only doctors or admin can delete medical records",
+      });
+    }
+    const deleted = await MedicalRecord.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Medical record not found" });
+    }
+    res.json({ message: "Medical record deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting medical record:", err);
+    res
+      .status(500)
+      .json({ message: "Error deleting medical record", error: err.message });
+  }
+};
+
 module.exports = {
   createMedicalRecord,
   getMedicalRecordsByUser,
   getAllMedicalRecordsForDoctor,
+  updateMedicalRecord,
+  deleteMedicalRecord,
 };

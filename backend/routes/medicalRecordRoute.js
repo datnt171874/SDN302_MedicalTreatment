@@ -11,5 +11,11 @@ router.get(
   authenticate,
   medicalRecordController.getAllMedicalRecordsForDoctor
 );
+router.put("/:id", authenticate, medicalRecordController.updateMedicalRecord);
+router.delete(
+  "/:id",
+  authenticate,
+  medicalRecordController.deleteMedicalRecord
+);
 
 module.exports = router;

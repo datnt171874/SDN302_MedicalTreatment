@@ -19,6 +19,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Grid,
+  Divider,
 } from "@mui/material";
 import DoctorLayout from "../../components/DoctorLayout";
 import { appointmentService } from "../../services/appointmentService";
@@ -31,8 +33,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -40,6 +40,11 @@ import NotesIcon from "@mui/icons-material/Notes";
 import Tooltip from "@mui/material/Tooltip";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
+import MedicationIcon from "@mui/icons-material/Medication";
+import EditIcon from "@mui/icons-material/Edit";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const DoctorMedicalRecords = () => {
   const [medicalRecords, setMedicalRecords] = useState([]);
@@ -65,7 +70,18 @@ const DoctorMedicalRecords = () => {
   const [treatmentPlanLoading, setTreatmentPlanLoading] = useState(false);
   const [allMedicalRecords, setAllMedicalRecords] = useState([]);
   const [showRecordDialog, setShowRecordDialog] = useState(false);
-  const [recordToShow, setRecordToShow] = useState([]);
+  const [expandedPatientId, setExpandedPatientId] = useState(null);
+  const [detailRecord, setDetailRecord] = useState(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [editRecord, setEditRecord] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success", // "success" | "error" | "info" | "warning"
+  });
 
   useEffect(() => {
     // Fetch all appointments, filter confirmed in FE
@@ -196,15 +212,114 @@ const DoctorMedicalRecords = () => {
       await medicalRecordService.create(newRecord);
       setMedicalRecords([...medicalRecords, newRecord]);
       setSelectedPatient(null);
+      setSnackbar({
+        open: true,
+        message: "Tạo medical record thành công!",
+        severity: "success",
+      });
     } catch (err) {
-      alert("Lưu medical record thất bại!");
+      setSnackbar({
+        open: true,
+        message: "Tạo medical record thất bại!",
+        severity: "error",
+      });
     }
     setCreating(false);
   };
 
-  const handleShowMedicalRecord = (records) => {
-    setRecordToShow(records);
-    setShowRecordDialog(true);
+  const handleShowMedicalRecord = (patientId) => {
+    setExpandedPatientId(expandedPatientId === patientId ? null : patientId);
+  };
+
+  const handleShowRecordDetail = (rec) => {
+    setDetailRecord(rec);
+    setShowDetailDialog(true);
+  };
+
+  const handleCloseDetailDialog = () => setShowDetailDialog(false);
+
+  const handleEditRecord = (rec) => {
+    // Deep copy để không ảnh hưởng trực tiếp state gốc
+    setEditRecord(JSON.parse(JSON.stringify(rec)));
+    setShowEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => setShowEditDialog(false);
+
+  const handleEditPrescriptionChange = (idx, e) => {
+    const newPres = [...editRecord.prescription];
+    newPres[idx][e.target.name] = e.target.value;
+    setEditRecord({ ...editRecord, prescription: newPres });
+  };
+
+  const handleAddEditPrescription = () => {
+    setEditRecord({
+      ...editRecord,
+      prescription: [
+        ...editRecord.prescription,
+        {
+          medicationName: "",
+          dosage: "",
+          frequency: "",
+          duration: "",
+          instructions: "",
+        },
+      ],
+    });
+  };
+
+  const handleRemoveEditPrescription = (idx) => {
+    const newPres = editRecord.prescription.filter((_, i) => i !== idx);
+    setEditRecord({ ...editRecord, prescription: newPres });
+  };
+
+  const handleSaveEditRecord = async () => {
+    try {
+      await medicalRecordService.update(editRecord._id, editRecord);
+      const res = await medicalRecordService.getAll();
+      setAllMedicalRecords(res.data || res);
+      setShowEditDialog(false);
+      setSnackbar({
+        open: true,
+        message: "Cập nhật medical record thành công!",
+        severity: "success",
+      });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: "Cập nhật medical record thất bại!",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
+
+  const handleOpenDeleteConfirm = (rec) => {
+    setRecordToDelete(rec);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleCloseDeleteConfirm = () => setShowDeleteConfirm(false);
+
+  const handleConfirmDelete = async () => {
+    try {
+      await medicalRecordService.delete(recordToDelete._id);
+      const res = await medicalRecordService.getAll();
+      setAllMedicalRecords(res.data || res);
+      setShowDeleteConfirm(false);
+      setSnackbar({
+        open: true,
+        message: "Xóa medical record thành công!",
+        severity: "success",
+      });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: "Xóa medical record thất bại!",
+        severity: "error",
+      });
+    }
   };
 
   return (
@@ -236,7 +351,7 @@ const DoctorMedicalRecords = () => {
             sx={{ maxWidth: 400, mb: 2 }}
             isOptionEqualToValue={(option, value) => option.id === value.id}
           />
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 2, color: "green" }}>
             Danh sách bệnh nhân đã xác nhận lịch hẹn
           </Typography>
           <TableContainer component={Paper} sx={{ mb: 3 }}>
@@ -245,7 +360,7 @@ const DoctorMedicalRecords = () => {
                 <TableRow>
                   <TableCell>Họ tên</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell></TableCell>
+                  <TableCell>Thao tác</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -256,32 +371,142 @@ const DoctorMedicalRecords = () => {
                       (r.userId && r.userId._id === p.id)
                   );
                   return (
-                    <TableRow key={p.id}>
-                      <TableCell>{p.name}</TableCell>
-                      <TableCell>{p.email}</TableCell>
-                      <TableCell>
-                        <Tooltip title="Tạo Medical Record" arrow>
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleSelectPatient(null, p)}
-                          >
-                            <AddIcon />
-                          </IconButton>
-                        </Tooltip>
-                        {patientRecords.length > 0 && (
-                          <Tooltip title="Xem" arrow>
+                    <React.Fragment key={p.id}>
+                      <TableRow>
+                        <TableCell>{p.name}</TableCell>
+                        <TableCell>{p.email}</TableCell>
+                        <TableCell>
+                          <Tooltip title="Tạo Medical Record" arrow>
                             <IconButton
                               color="primary"
-                              onClick={() =>
-                                handleShowMedicalRecord(patientRecords)
-                              }
+                              onClick={() => handleSelectPatient(null, p)}
                             >
-                              <VisibilityIcon />
+                              <AddIcon />
                             </IconButton>
                           </Tooltip>
-                        )}
-                      </TableCell>
-                    </TableRow>
+                          {patientRecords.length > 0 && (
+                            <Tooltip title="Xem" arrow>
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleShowMedicalRecord(p.id)}
+                              >
+                                <VisibilityIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                      {expandedPatientId === p.id && (
+                        <TableRow>
+                          <TableCell colSpan={3}>
+                            {patientRecords.map((rec, idx) => (
+                              <Card
+                                key={idx}
+                                sx={{
+                                  mb: 1.5,
+                                  cursor: "pointer",
+                                  borderLeft: "5px solid #4A6D5A",
+                                  boxShadow: 2,
+                                  borderRadius: 2,
+                                  transition: "background 0.2s",
+                                  "&:hover": { background: "#f0f7f4" },
+                                  position: "relative",
+                                  minHeight: 56,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  px: 2,
+                                }}
+                                onClick={() => handleShowRecordDetail(rec)}
+                              >
+                                <CardContent
+                                  sx={{
+                                    p: 1,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    width: "100%",
+                                    minHeight: 40,
+                                    "&:last-child": { pb: 1 },
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 2,
+                                      flex: 1,
+                                      minWidth: 0,
+                                    }}
+                                  >
+                                    <CalendarMonthIcon
+                                      sx={{ color: "#4A6D5A", mr: 1 }}
+                                    />
+                                    <Typography
+                                      variant="subtitle2"
+                                      fontWeight={700}
+                                      color="#4A6D5A"
+                                      noWrap
+                                    >
+                                      {rec.recordDate
+                                        ? new Date(
+                                            rec.recordDate
+                                          ).toLocaleDateString("vi-VN")
+                                        : ""}
+                                    </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      fontWeight={500}
+                                      color="#1976d2"
+                                      noWrap
+                                      sx={{ mx: 2, minWidth: 0, flexShrink: 1 }}
+                                    >
+                                      Chẩn đoán: {rec.diagnosis}
+                                    </Typography>
+                                    {rec.treatmentPlanId && (
+                                      <Typography
+                                        variant="body2"
+                                        color="#388e3c"
+                                        noWrap
+                                        sx={{ minWidth: 0, flexShrink: 1 }}
+                                      >
+                                        Phác đồ: {rec.treatmentPlanId.regimen}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: 1,
+                                      ml: 2,
+                                    }}
+                                  >
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditRecord(rec);
+                                      }}
+                                    >
+                                      <EditIcon color="action" />
+                                    </IconButton>
+                                    <IconButton
+                                      size="small"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleOpenDeleteConfirm(rec);
+                                      }}
+                                    >
+                                      <DeleteIcon color="error" />
+                                    </IconButton>
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </TableBody>
@@ -462,7 +687,7 @@ const DoctorMedicalRecords = () => {
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           <Grid container spacing={2}>
-            {recordToShow.map((rec, idx) => (
+            {allMedicalRecords.map((rec, idx) => (
               <Grid item xs={12} key={idx}>
                 <Card
                   variant="outlined"
@@ -676,6 +901,322 @@ const DoctorMedicalRecords = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={showDetailDialog}
+        onClose={handleCloseDetailDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: "#4A6D5A", fontWeight: 700 }}>
+          <AssignmentIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+          Chi tiết Medical Record
+        </DialogTitle>
+        <DialogContent>
+          {detailRecord && (
+            <Box sx={{ p: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography fontWeight={600}>
+                    <CalendarMonthIcon sx={{ mr: 1, color: "#4A6D5A" }} />
+                    Ngày tạo:{" "}
+                    <span style={{ color: "#1976d2" }}>
+                      {detailRecord.recordDate
+                        ? new Date(detailRecord.recordDate).toLocaleString(
+                            "vi-VN"
+                          )
+                        : ""}
+                    </span>
+                  </Typography>
+                  <Typography fontWeight={600} sx={{ mt: 1 }}>
+                    <LocalHospitalIcon sx={{ mr: 1, color: "#388e3c" }} />
+                    Chẩn đoán:{" "}
+                    <span style={{ color: "#388e3c" }}>
+                      {detailRecord.diagnosis}
+                    </span>
+                  </Typography>
+                  <Typography fontWeight={600} sx={{ mt: 1 }}>
+                    <AssignmentIcon sx={{ mr: 1, color: "#1976d2" }} />
+                    Phác đồ:{" "}
+                    <span style={{ color: "#1976d2" }}>
+                      {detailRecord.treatmentPlanId?.regimen}
+                    </span>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography fontWeight={600}>
+                    <NotesIcon sx={{ mr: 1, color: "#ff9800" }} />
+                    Ghi chú:{" "}
+                    <span style={{ color: "#555" }}>{detailRecord.notes}</span>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography fontWeight={700} sx={{ mb: 1 }}>
+                    Đơn thuốc:
+                  </Typography>
+                  {detailRecord.prescription &&
+                  detailRecord.prescription.length > 0 ? (
+                    <Table
+                      size="small"
+                      sx={{
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        boxShadow: 1,
+                        mt: 1,
+                        mb: 1,
+                        minWidth: 400,
+                        "& .MuiTableCell-head": {
+                          background: "#e3f2fd",
+                          color: "#1976d2",
+                          fontWeight: 700,
+                          fontSize: 15,
+                          textAlign: "center",
+                        },
+                        "& .MuiTableCell-body": {
+                          fontSize: 14,
+                          textAlign: "center",
+                        },
+                        "& .MuiTableRow-root:nth-of-type(odd)": {
+                          backgroundColor: "#f9fbe7",
+                        },
+                      }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            <MedicationIcon
+                              sx={{
+                                verticalAlign: "middle",
+                                color: "#388e3c",
+                                mr: 1,
+                              }}
+                            />
+                            Tên thuốc
+                          </TableCell>
+                          <TableCell>Liều dùng</TableCell>
+                          <TableCell>Tần suất</TableCell>
+                          <TableCell>Thời gian</TableCell>
+                          <TableCell>Hướng dẫn</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {detailRecord.prescription.map((pres, i) => (
+                          <TableRow key={i}>
+                            <TableCell>
+                              <b>{pres.medicationName}</b>
+                            </TableCell>
+                            <TableCell>{pres.dosage}</TableCell>
+                            <TableCell>{pres.frequency}</TableCell>
+                            <TableCell>{pres.duration}</TableCell>
+                            <TableCell>{pres.instructions}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <Typography>Không có đơn thuốc</Typography>
+                  )}
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog}>Đóng</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={showEditDialog}
+        onClose={handleCloseEditDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: "#1976d2", fontWeight: 700 }}>
+          <EditIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+          Chỉnh sửa Medical Record
+        </DialogTitle>
+        <DialogContent>
+          {editRecord && (
+            <Box sx={{ p: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Chẩn đoán"
+                    name="diagnosis"
+                    value={editRecord.diagnosis}
+                    onChange={(e) =>
+                      setEditRecord({
+                        ...editRecord,
+                        diagnosis: e.target.value,
+                      })
+                    }
+                    fullWidth
+                    margin="normal"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Ghi chú"
+                    name="notes"
+                    value={editRecord.notes}
+                    onChange={(e) =>
+                      setEditRecord({ ...editRecord, notes: e.target.value })
+                    }
+                    fullWidth
+                    margin="normal"
+                    multiline
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography fontWeight={700} sx={{ mb: 1 }}>
+                    Đơn thuốc:
+                  </Typography>
+                  <Table
+                    size="small"
+                    sx={{
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      boxShadow: 1,
+                      mb: 1,
+                    }}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Tên thuốc</TableCell>
+                        <TableCell>Liều dùng</TableCell>
+                        <TableCell>Tần suất</TableCell>
+                        <TableCell>Thời gian</TableCell>
+                        <TableCell>Hướng dẫn</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {editRecord.prescription.map((pres, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>
+                            <TextField
+                              name="medicationName"
+                              value={pres.medicationName}
+                              onChange={(e) =>
+                                handleEditPrescriptionChange(idx, e)
+                              }
+                              size="small"
+                              fullWidth
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              name="dosage"
+                              value={pres.dosage}
+                              onChange={(e) =>
+                                handleEditPrescriptionChange(idx, e)
+                              }
+                              size="small"
+                              fullWidth
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              name="frequency"
+                              value={pres.frequency}
+                              onChange={(e) =>
+                                handleEditPrescriptionChange(idx, e)
+                              }
+                              size="small"
+                              fullWidth
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              name="duration"
+                              value={pres.duration}
+                              onChange={(e) =>
+                                handleEditPrescriptionChange(idx, e)
+                              }
+                              size="small"
+                              fullWidth
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <TextField
+                              name="instructions"
+                              value={pres.instructions}
+                              onChange={(e) =>
+                                handleEditPrescriptionChange(idx, e)
+                              }
+                              size="small"
+                              fullWidth
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              color="error"
+                              onClick={() => handleRemoveEditPrescription(idx)}
+                              disabled={editRecord.prescription.length === 1}
+                            >
+                              Xóa
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <Button
+                    variant="outlined"
+                    onClick={handleAddEditPrescription}
+                    sx={{ mb: 2 }}
+                  >
+                    Thêm thuốc
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog}>Hủy</Button>
+          <Button
+            onClick={handleSaveEditRecord}
+            variant="contained"
+            color="primary"
+          >
+            Lưu
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showDeleteConfirm} onClose={handleCloseDeleteConfirm}>
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Bạn có chắc chắn muốn xóa medical record này không? Hành động này
+            không thể hoàn tác.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteConfirm}>Hủy</Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+          >
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </DoctorLayout>
   );
 };
