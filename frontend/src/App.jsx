@@ -25,8 +25,13 @@ import MessagesComments from "./pages/MessagesComments";
 import Account from "./pages/Account";
 import TreatmentPlanUser from "./pages/TreatmentPlanUser";
 import TreatmentPlanDoctor from "./pages/TreatmentPlanDoctor";
-import StaffDashboard from "./pages/StaffDashboard";
+import StaffDashboard from "./pages/staff/StaffDashboard";
 import DoctorMedicalRecords from "./pages/doctor/DoctorMedicalRecords";
+import StaffLayout from "./components/StaffLayout";
+import StaffAppointments from "./pages/staff/StaffAppointments";
+import StaffDoctors from "./pages/staff/StaffDoctors";
+import StaffTreatmentPlans from "./pages/staff/StaffTreatmentPlans";
+import StaffMedicalRecords from "./pages/staff/StaffMedicalRecords";
 
 function App() {
   const location = useLocation();
@@ -35,8 +40,8 @@ function App() {
   return (
     <Box sx={{ backgroundColor: "#EAE7D6", minHeight: "100vh" }}>
       {!location.pathname.startsWith("/user") &&
-        !location.pathname.startsWith("/doctor") && <Header />}
-      {location.pathname.startsWith("/doctor") && <HeaderDoctor />}
+        !location.pathname.startsWith("/doctor") &&
+        !location.pathname.startsWith("/staff") && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkin" element={<CheckinPage />} />
@@ -44,8 +49,46 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/doctor" element={<DoctorPage />} />
-        <Route path="/staff-dashboard" element={<StaffDashboard />} />
-        <Route path="/staff-reminder" element={<StaffReminders />} />
+        <Route
+          path="/staff-dashboard"
+          element={
+            <StaffLayout>
+              <StaffDashboard />
+            </StaffLayout>
+          }
+        />
+        <Route
+          path="/staff-reminder"
+          element={
+            <StaffLayout>
+              <StaffReminders />
+            </StaffLayout>
+          }
+        />
+        <Route
+          path="/staff-appointments"
+          element={
+            <StaffLayout>
+              <StaffAppointments />
+            </StaffLayout>
+          }
+        />
+        <Route
+          path="/staff-doctors"
+          element={
+            <StaffLayout>
+              <StaffDoctors />
+            </StaffLayout>
+          }
+        />
+        <Route
+          path="/staff-treatment-plans"
+          element={
+            <StaffLayout>
+              <StaffTreatmentPlans />
+            </StaffLayout>
+          }
+        />
 
         {/* User Dashboard Routes */}
         <Route path="/user" element={<UserDashboard />}>

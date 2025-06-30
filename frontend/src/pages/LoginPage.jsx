@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -7,51 +7,53 @@ import {
   Button,
   Paper,
   Grid,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ userName: '', password: '' });
+  const [formData, setFormData] = useState({ userName: "", password: "" });
   const navigate = useNavigate();
 
-
-//admin1 12345 | doctor1 12345 | user1 12345
+  //admin1 12345 | doctor1 12345 | user1 12345
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-      const {roleName, token, userId} = response.data;
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        formData
+      );
+      const { roleName, token, userId } = response.data;
       if (token) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId); 
-        if (roleName === 'Doctor') {
-          navigate('/doctor');
-        } else if (roleName === 'Admin') {
-          navigate('/admin');
-        } else if (roleName === 'Customer') {
-          navigate('/user');
-        }else if (roleName === 'Staff') {
-          navigate('/staff-reminder');
-        }else {
-          alert('Unknown role');
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", userId);
+        if (roleName === "Doctor") {
+          navigate("/doctor");
+        } else if (roleName === "Admin") {
+          navigate("/admin");
+        } else if (roleName === "Customer") {
+          navigate("/user");
+        } else if (roleName === "Staff") {
+          navigate("/staff-reminder");
+        } else {
+          alert("Unknown role");
         }
       } else {
-        alert('Login failed: No token received');
+        alert("Login failed: No token received");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      alert(error.response?.data?.message || 'An error occurred during login');
+      console.error("Login error:", error);
+      alert(error.response?.data?.message || "An error occurred during login");
     }
   };
 
   return (
     <Box
       sx={{
-        backgroundColor: 'background.default',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
+        backgroundColor: "background.default",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
       }}
     >
       <Container maxWidth="md">
@@ -60,8 +62,8 @@ const LoginPage = () => {
           sx={{
             p: 6,
             borderRadius: 4,
-            backgroundColor: 'white',
-            boxShadow: '0 2px 20px rgba(0,0,0,0.1)',
+            backgroundColor: "white",
+            boxShadow: "0 2px 20px rgba(0,0,0,0.1)",
           }}
         >
           <Grid container spacing={4}>
@@ -71,33 +73,33 @@ const LoginPage = () => {
               xs={12}
               md={6}
               sx={{
-                backgroundColor: 'primary.main',
-                color: '#fff',
+                backgroundColor: "primary.main",
+                color: "#fff",
                 borderRadius: 3,
                 px: 4,
                 py: 6,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
               }}
             >
               <Typography variant="h4" fontWeight="bold" mb={2}>
                 Welcome
               </Typography>
               <Typography variant="body1">
-                Please Log In & We can help you easily!!! 
+                Please Log In & We can help you easily!!!
               </Typography>
 
               <Button
-                onClick={() => navigate('/register')}
+                onClick={() => navigate("/register")}
                 variant="outlined"
                 sx={{
                   mt: 4,
-                  color: '#fff',
-                  borderColor: '#fff',
-                  '&:hover': {
-                    backgroundColor: 'primary.light',
-                    borderColor: '#fff',
+                  color: "#fff",
+                  borderColor: "#fff",
+                  "&:hover": {
+                    backgroundColor: "primary.light",
+                    borderColor: "#fff",
                   },
                 }}
               >
@@ -143,7 +145,7 @@ const LoginPage = () => {
                   sx={{
                     mt: 3,
                     py: 1.5,
-                    fontWeight: 'bold',
+                    fontWeight: "bold",
                     fontSize: 16,
                     borderRadius: 2,
                   }}

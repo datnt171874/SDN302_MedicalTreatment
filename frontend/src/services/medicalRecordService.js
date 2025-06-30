@@ -14,5 +14,17 @@ export const medicalRecordService = {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
+  update: async (id, data) => {
+    const token = localStorage.getItem("token");
+    return axios.put(`${API_URL}/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  },
+  delete: async (id) => {
+    const token = localStorage.getItem("token");
+    return axios.delete(`${API_URL}/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  },
   // Có thể bổ sung các hàm khác nếu cần
 };
