@@ -11,72 +11,85 @@ const createAppointment = async (req, res) => {
     const {
       doctorId,
       appointmentDate,
+      timeSlot,
       duration,
-      serviceType,
-      patientName,
-      symptomsDescription,
-      age,
-      placeOfBirth,
-      addressForExamination,
-      examinationType,
-    } = req.body;
-    const userId = req.user.id;
-
-    const isRevisit =
-      serviceType === "Examination" && examinationType === "revisit";
-
-    const doctor = await Doctor.findById(doctorId);
-    if (!doctor) {
-      return res.status(404).json({ message: "Can not find the doctor" });
-    }
-
-    let pricingQuery = { appointmentType: serviceType };
-    if (serviceType === "Consultation") {
-      if (!duration) {
-        return res
-          .status(400)
-          .json({ message: "Consultation must have a duration (30 or 60)" });
-      }
-      pricingQuery.duration = duration;
-    } else if (serviceType === "Examination") {
-      pricingQuery.duration = "30";
-    }
-
-    const pricing = await Pricing.findOne(pricingQuery);
-    if (!pricing) {
-      return res
-        .status(400)
-        .json({
-          message: "No pricing found for this AppointmentType and Duration.",
-        });
-    }
-
-    const newAppointment = new Appointment({
-      userId,
-      doctorId,
-      appointmentCode: generateAppointmentCode(),
-      appointmentDate,
-      duration: serviceType === "Consultation" ? duration : undefined,
-      appointmentType: serviceType,
-      price: pricing.price,
-      pricingId: pricing._id,
+      appointmentType,
+      price,
       isRevisit,
-      note: symptomsDescription,
-      patientName,
-      age,
-      placeOfBirth,
-      addressForExamination,
-      createdAt: new Date(),
+      pricingId,
+      // patientName,
+      note,
+      appointmentCode,
+      isAnonymous,
+    } = req.body;
+
+    // Validate required fields
+    if (!doctorId || !appointmentDate || !timeSlot || !appointmentType || !price || !pricingId || !appointmentCode) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (appointmentType === "Examination" && isRevisit === undefined) {
+      return res.status(400).json({ message: "isRevisit is required for Examination" });
+    }
+
+    // Validate pricingId
+    const pricing = await Pricing.findById(pricingId);
+    if (!pricing) {
+      return res.status(400).json({ message: "Invalid pricingId" });
+    }
+
+    // Check for existing appointment
+    const startOfDay = new Date(appointmentDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(appointmentDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingAppointment = await Appointment.findOne({
+      doctorId,
+      appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+      timeSlot,
     });
 
-    await newAppointment.save();
+    if (existingAppointment) {
+      return res.status(400).json({ message: "Time slot is already booked" });
+    }
 
-    res.status(201).json(newAppointment);
+    // Check for duplicate appointmentCode
+    const existingCode = await Appointment.findOne({ appointmentCode });
+    if (existingCode) {
+      return res.status(400).json({ message: "Appointment code already exists" });
+    }
+
+    const appointment = new Appointment({
+      userId: req.user.id,
+      doctorId,
+      appointmentDate,
+      timeSlot,
+      duration,
+      appointmentType,
+      price,
+      isRevisit: appointmentType === "Examination" ? isRevisit : false,
+      pricingId,
+      // patientName,
+      note,
+      appointmentCode: generateAppointmentCode(),
+      isAnonymous: isAnonymous || false,
+      status: "Pending",
+    });
+
+    await appointment.save();
+
+    const populatedAppointment = await Appointment.findById(appointment._id)
+      .populate("userId", "fullName emailAddress")
+      .populate({
+        path: "doctorId",
+        populate: { path: "userId", select: "fullName" },
+      });
+
+    res.status(201).json({ message: "Appointment created successfully", appointment: populatedAppointment });
   } catch (err) {
     console.error("Error creating appointment:", err);
-    res
-      .status(500)
-      .json({ message: "Error creating appointment", error: err.message });
+    res.status(500).json({ message: "Failed to create appointment", error: err.message });
   }
 };
 
@@ -179,23 +192,35 @@ const getAppointmentById = async (req, res) => {
 const getAppointmentsByDoctorAndDate = async (req, res) => {
   try {
     const { doctorId, date } = req.query;
+    if (!date) {
+      return res.status(400).json({ message: "Missing date parameter" });
+    }
 
-    // if (!doctorId || !date) {
-    //   return res.status(400).json({ message: "Doctor ID and date are required" });
-    // }
+    console.log(`Querying appointments for doctor ${doctorId} on ${date}`);
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
 
-    const startOfDay = new Date(date).setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date).setHours(23, 59, 59, 999);
-
-    const appointments = await Appointment.find({
-      doctorId,
+    const query = {
       appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-    }).populate("userId", "fullName");
+    };
+    if (doctorId) {
+      query.doctorId = doctorId;
+    }
 
+    const appointments = await Appointment.find(query)
+      .populate("userId", "fullName emailAddress")
+      .populate({
+        path: "doctorId",
+        populate: { path: "userId", select: "fullName" },
+      });
+
+    console.log("Appointments found:", appointments);
     res.json(appointments);
   } catch (err) {
     console.error("Error fetching appointments:", err);
-    res.status(500).json({ message: "Error fetching appointments", error: err.message });
+    res.status(500).json({ message: "Failed to fetch appointments", error: err.message });
   }
 };
 const updateAppointmentStatus = async (req, res) => {

@@ -17,7 +17,6 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import { CalendarToday as CalendarTodayIcon } from "@mui/icons-material";
 import { doctorService } from "../services/doctorService";
 import { appointmentService } from "../services/appointmentService";
 import axios from "axios";
@@ -32,12 +31,9 @@ function BookAppointment() {
     serviceType: "",
     consultationDuration: "",
     examinationType: "",
-    age: "",
-    placeOfBirth: "",
-    addressForExamination: "",
     timeSlot: "",
   });
-
+  const [isExistingPatient, setIsExistingPatient] = useState(false);
   const [price, setPrice] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -50,44 +46,82 @@ function BookAppointment() {
 
   const servicePrices = React.useMemo(
     () => ({
-      Consultation: {
-        30: 150000,
-        60: 250000,
-      },
+      Consultation: { 30: 150000, 60: 250000 },
       Examination: 250000,
     }),
     []
   );
 
+  const getPricingId = async (appointmentType, duration) => {
+    try {
+      console.log(`Fetching pricing for ${appointmentType}, duration: ${duration}`);
+      const response = await axios.post(
+        "http://localhost:3000/api/pricing",
+        {
+          appointmentType,
+          duration: duration || "30",
+          price: servicePrices[appointmentType][duration] || servicePrices[appointmentType],
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+      console.log("Pricing response:", response.data);
+      return response.data._id;
+    } catch (err) {
+      console.error("Error fetching pricingId:", err.response?.data || err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
-    const fetchDoctors = async () => {
+    const fetchDoctorsAndCheckPatient = async () => {
       try {
-        const data = await doctorService.getAllDoctors();
+        setLoading(true);
+        const [data, hasAppointments] = await Promise.all([
+          doctorService.getAllDoctors(),
+          appointmentService.checkExistingAppointments(),
+        ]);
+        console.log("Fetched doctors:", data);
+        console.log("Is existing patient:", hasAppointments);
         setDoctors(data);
+        setIsExistingPatient(hasAppointments);
       } catch (err) {
-        setError(err.message || "Error fetching doctors");
-        setSnackbarMessage(err.message || "Error fetching doctors");
+        console.error("Error fetching data:", err);
+        setError(err.message || "Error fetching data");
+        setSnackbarMessage(err.message || "Error fetching data");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
       } finally {
         setLoading(false);
       }
     };
-    fetchDoctors();
+    fetchDoctorsAndCheckPatient();
   }, []);
 
   useEffect(() => {
-    if (appointmentDetails.doctor) {
+    if (appointmentDetails.doctor && appointmentDetails.date) {
       fetchDoctorSchedule(appointmentDetails.doctor);
       fetchBookedSlots(appointmentDetails.doctor, appointmentDetails.date);
     }
   }, [appointmentDetails.doctor, appointmentDetails.date]);
 
+  useEffect(() => {
+    // Auto-set examinationType to "revisit" for existing patients when serviceType is Examination
+    if (isExistingPatient && appointmentDetails.serviceType === "Examination") {
+      setAppointmentDetails((prevDetails) => ({
+        ...prevDetails,
+        examinationType: "revisit",
+      }));
+    }
+  }, [appointmentDetails.serviceType, isExistingPatient]);
+
   const fetchDoctorSchedule = async (doctorId) => {
     try {
+      console.log("Fetching schedule for doctor:", doctorId);
       const doctor = await doctorService.getDoctorById(doctorId);
       setSelectedDoctorSchedule(doctor.workSchedule || []);
+      console.log("Doctor schedule:", doctor.workSchedule);
     } catch (err) {
+      console.error("Error fetching doctor schedule:", err);
       setError(err.message || "Error fetching doctor schedule");
       setSnackbarMessage(err.message || "Error fetching doctor schedule");
       setSnackbarSeverity("error");
@@ -96,18 +130,23 @@ function BookAppointment() {
   };
 
   const fetchBookedSlots = async (doctorId, date) => {
-    if (!date) return;
+    if (!doctorId || !date) {
+      console.warn("Missing doctorId or date for fetching booked slots");
+      return;
+    }
     try {
       console.log(`Fetching booked slots for doctor ${doctorId} on ${date}`);
-      const appointments = await appointmentService.getByDoctorAndDate(doctorId, date);
+      const formattedDate = moment(date).format("YYYY-MM-DD");
+      console.log("Formatted date:", formattedDate);
+      const appointments = await appointmentService.getByDoctorAndDate(doctorId, formattedDate);
       console.log("Appointments fetched:", appointments);
-      const booked = new Set(appointments.map((a) => a.timeSlot));
+      const booked = new Set(appointments.map((a) => a.timeSlot).filter(slot => slot));
       console.log("Booked slots:", Array.from(booked));
       setBookedSlots(booked);
     } catch (err) {
-      console.error("Error fetching booked slots:", err);
-      setError("Failed to fetch booked slots");
-      setSnackbarMessage("Failed to fetch booked slots");
+      console.error("Error fetching booked slots:", err.response?.data || err);
+      setError(err.response?.data?.message || "Failed to fetch booked slots");
+      setSnackbarMessage(err.response?.data?.message || "Failed to fetch booked slots");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
@@ -145,19 +184,46 @@ function BookAppointment() {
       return;
     }
     setSnackbarOpen(false);
-    setError(null); // Reset error state when closing snackbar
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setSnackbarMessage("No authentication token found");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!appointmentDetails.doctor || !appointmentDetails.date || !appointmentDetails.timeSlot) {
+      setSnackbarMessage("Please select doctor, date, and time slot");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setLoading(false);
+      return;
+    }
+
+    if (appointmentDetails.serviceType === "Examination" && !appointmentDetails.examinationType) {
+      setSnackbarMessage("Please select examination type for Examination");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setLoading(false);
+      return;
+    }
+
     const day = new Date(appointmentDetails.date).toLocaleDateString("en-US", {
       weekday: "long",
     });
     const schedule = selectedDoctorSchedule.find((s) => s.days.includes(day));
     if (!schedule || !schedule.slots) {
-      setSnackbarMessage("No schedule available for this day.");
+      setSnackbarMessage("No schedule available for this day");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+      setLoading(false);
       return;
     }
 
@@ -167,17 +233,20 @@ function BookAppointment() {
     const slotsToBook = finalDuration === "60" ? 2 : 1;
     const timeSlots = [];
     let currentSlot = appointmentDetails.timeSlot;
+
     for (let i = 0; i < slotsToBook; i++) {
       if (!schedule.slots.some((s) => s.time === currentSlot)) {
-        setSnackbarMessage("Selected time slot is invalid.");
+        setSnackbarMessage("Selected time slot is invalid");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
+        setLoading(false);
         return;
       }
       if (bookedSlots.has(currentSlot)) {
-        setSnackbarMessage("One or more selected time slots are already booked.");
+        setSnackbarMessage("One or more selected time slots are already booked");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
+        setLoading(false);
         return;
       }
       timeSlots.push(currentSlot);
@@ -186,9 +255,10 @@ function BookAppointment() {
         const nextStart = moment(end, "HH:mm").add(30, "minutes").format("HH:mm");
         currentSlot = `${end}-${nextStart}`;
         if (!schedule.slots.some((s) => s.time === currentSlot)) {
-          setSnackbarMessage("Consecutive slots are not available for 60 minutes.");
+          setSnackbarMessage("Consecutive slots are not available for 60 minutes");
           setSnackbarSeverity("error");
           setSnackbarOpen(true);
+          setLoading(false);
           return;
         }
       }
@@ -200,32 +270,55 @@ function BookAppointment() {
         appointmentDetails.date + "T" + startTime + ":00+07:00"
       );
 
+      const isRevisit = appointmentDetails.serviceType === "Examination"
+        ? appointmentDetails.examinationType === "revisit"
+        : false;
+
+      const pricingId = await getPricingId(appointmentDetails.serviceType, finalDuration);
+
+      const dateStr = moment(appointmentDateTime).format("YYYYMMDD");
+      const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const appointmentCode = `C-${dateStr}-${randomStr}`;
+
       const payload = {
         doctorId: appointmentDetails.doctor,
         appointmentDate: appointmentDateTime,
-        duration: finalDuration,
         timeSlot: appointmentDetails.timeSlot,
-        startTime: startTime,
+        duration: finalDuration,
+        appointmentType: appointmentDetails.serviceType,
+        price,
+        isRevisit,
+        pricingId,
         patientName: appointmentDetails.patientName,
-        symptomsDescription: appointmentDetails.symptomsDescription,
-        serviceType: appointmentDetails.serviceType,
-        age: appointmentDetails.age,
-        placeOfBirth: appointmentDetails.placeOfBirth,
-        addressForExamination: appointmentDetails.addressForExamination,
-        examinationType: appointmentDetails.examinationType,
+        note: appointmentDetails.symptomsDescription,
+        appointmentCode,
+        isAnonymous: false,
       };
 
-      await appointmentService.create(payload);
-      await Promise.all(
-        timeSlots.map((slot) =>
-          axios.put(
-            `http://localhost:3000/api/doctors/${appointmentDetails.doctor}/book-slot`,
-            { date: appointmentDetails.date, timeSlot: slot },
-            { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-          )
-        )
-      );
+      console.log("Creating appointment with payload:", payload);
+      const appointmentResponse = await appointmentService.create(payload);
+      console.log("Appointment created:", appointmentResponse);
 
+      try {
+        await Promise.all(
+          timeSlots.map(async (slot) => {
+            const response = await axios.put(
+              `http://localhost:3000/api/doctors/${appointmentDetails.doctor}/book-slot`,
+              { date: appointmentDetails.date, timeSlot: slot },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            console.log(`Booked slot ${slot}:`, response.data);
+            return response;
+          })
+        );
+      } catch (slotErr) {
+        console.warn("Warning: Failed to book time slots, but appointment was created:", slotErr.response?.data || slotErr);
+        setSnackbarMessage("Appointment created, but failed to book time slots. Please contact support.");
+        setSnackbarSeverity("warning");
+        setSnackbarOpen(true);
+      }
+
+      await fetchBookedSlots(appointmentDetails.doctor, appointmentDetails.date);
       setSnackbarMessage("Đặt lịch thành công!");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -238,18 +331,17 @@ function BookAppointment() {
         serviceType: "",
         consultationDuration: "",
         examinationType: "",
-        age: "",
-        placeOfBirth: "",
-        addressForExamination: "",
         timeSlot: "",
       });
     } catch (err) {
-      console.error("Error creating appointment:", err);
+      console.error("Error creating appointment:", err.response?.data || err);
       setSnackbarMessage(
         err.response?.data?.message || "Có lỗi xảy ra khi đặt lịch"
       );
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -288,38 +380,22 @@ function BookAppointment() {
                 textAlign: "center",
               }}
             >
-              Make an Appointment - Consultation
+              Make an Appointment
             </Typography>
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3} alignItems="flex-start">
                 <Grid item xs={12} sm={6}>
                   <Stack spacing={3}>
                     <Box>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: 600, color: "#333333" }}
-                      >
-                        Patient Information
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        label="Patient's Full Name"
-                        name="patientName"
-                        value={appointmentDetails.patientName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </Box>
-
-                    <Box>
                       <FormControl fullWidth required>
-                        <InputLabel id="service-type-label">Service type</InputLabel>
+                        <InputLabel id="service-type-label">Service Type</InputLabel>
                         <Select
                           labelId="service-type-label"
                           name="serviceType"
                           value={appointmentDetails.serviceType}
-                          label="Loại dịch vụ"
+                          label="Service Type"
                           onChange={handleChange}
+                          disabled={loading}
                         >
                           <MenuItem value="Consultation">Consultation</MenuItem>
                           <MenuItem value="Examination">Examination</MenuItem>
@@ -340,6 +416,7 @@ function BookAppointment() {
                             name="examinationType"
                             value={appointmentDetails.examinationType}
                             onChange={handleChange}
+                            disabled={loading}
                           >
                             <FormControlLabel
                               value="new"
@@ -369,6 +446,7 @@ function BookAppointment() {
                             name="consultationDuration"
                             value={appointmentDetails.consultationDuration}
                             onChange={handleChange}
+                            disabled={loading}
                           >
                             <FormControlLabel
                               value="30"
@@ -401,6 +479,7 @@ function BookAppointment() {
                           value={appointmentDetails.doctor}
                           label="Choose a Doctor"
                           onChange={handleChange}
+                          disabled={loading}
                         >
                           {doctors
                             .filter(
@@ -439,28 +518,7 @@ function BookAppointment() {
                             value={appointmentDetails.timeSlot}
                             label="Time Slot"
                             onChange={handleChange}
-                            sx={{
-                              "& .MuiSelect-select": {
-                                padding: "10px",
-                              },
-                              "& .MuiMenuItem-root": {
-                                backgroundColor: bookedSlots.has(
-                                  appointmentDetails.timeSlot
-                                )
-                                  ? "#d3d3d3"
-                                  : "white",
-                                color: bookedSlots.has(appointmentDetails.timeSlot)
-                                  ? "#ffffff"
-                                  : "#333333",
-                                "&:hover": {
-                                  backgroundColor: bookedSlots.has(
-                                    appointmentDetails.timeSlot
-                                  )
-                                    ? "#c0c0c0"
-                                    : "#f0f0f0",
-                                },
-                              },
-                            }}
+                            disabled={loading}
                           >
                             {getAvailableSlots().map((slot) => (
                               <MenuItem
@@ -469,14 +527,14 @@ function BookAppointment() {
                                 disabled={bookedSlots.has(slot)}
                                 sx={{
                                   backgroundColor: bookedSlots.has(slot)
-                                    ? "#a9a9a9"
+                                    ? "#d3d3d3 !important"
                                     : "white",
                                   color: bookedSlots.has(slot)
                                     ? "#ffffff"
                                     : "#333333",
                                   "&:hover": {
                                     backgroundColor: bookedSlots.has(slot)
-                                      ? "#888888"
+                                      ? "#c0c0c0 !important"
                                       : "#e0e0e0",
                                   },
                                 }}
@@ -508,7 +566,10 @@ function BookAppointment() {
                         onChange={handleChange}
                         required
                         InputLabelProps={{ shrink: true }}
-                        min={new Date().toISOString().split("T")[0]}
+                        inputProps={{
+                          min: new Date().toISOString().split("T")[0],
+                        }}
+                        disabled={loading}
                       />
                     </Box>
 
@@ -527,6 +588,7 @@ function BookAppointment() {
                         value={appointmentDetails.symptomsDescription}
                         onChange={handleChange}
                         placeholder="Please describe your symptoms..."
+                        disabled={loading}
                       />
                     </Box>
 
@@ -561,6 +623,7 @@ function BookAppointment() {
                     textTransform: "none",
                     fontWeight: 600,
                   }}
+                  disabled={loading}
                 >
                   Book Appointment
                 </Button>

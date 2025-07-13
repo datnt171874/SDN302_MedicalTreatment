@@ -40,6 +40,7 @@ const DoctorTreatmentPlan = () => {
   const [formData, setFormData] = useState({
     userId: "",
     regimen: "",
+    customRegimen: "", // New field for custom regimen input
     startDate: "",
     endDate: "",
     nextAppointmentDate: "",
@@ -120,6 +121,7 @@ const DoctorTreatmentPlan = () => {
       setFormData({
         userId: plan.userId._id || "",
         regimen: plan.regimen || "",
+        customRegimen: plan.regimen === "Custom" ? plan.regimen : "", // Set customRegimen only if original was custom
         startDate: plan.startDate
           ? dayjs(plan.startDate).format("YYYY-MM-DD")
           : "",
@@ -137,6 +139,7 @@ const DoctorTreatmentPlan = () => {
       setFormData({
         userId: "",
         regimen: "",
+        customRegimen: "",
         startDate: "",
         endDate: "",
         nextAppointmentDate: "",
@@ -156,10 +159,20 @@ const DoctorTreatmentPlan = () => {
     try {
       if (!token) throw new Error("No authentication token found");
 
+      if (!currentPlanId && isEditing) {
+        throw new Error("Invalid treatment plan ID");
+      }
+
+      // Validate custom regimen
+      if (formData.regimen === "Custom" && !formData.customRegimen.trim()) {
+        setError("Custom regimen is required when selecting 'Tùy chỉnh'");
+        return;
+      }
+
       const treatmentData = {
         userId: formData.userId,
         doctorId: userId,
-        regimen: formData.regimen,
+        regimen: formData.regimen === "Custom" ? formData.customRegimen : formData.regimen,
         startDate: formData.startDate,
         endDate: formData.endDate || null,
         nextAppointmentDate: formData.nextAppointmentDate || null,
@@ -168,9 +181,9 @@ const DoctorTreatmentPlan = () => {
 
       let response;
       if (isEditing) {
-        // Update existing plan
+        console.log("Updating plan with ID:", currentPlanId, "Data:", treatmentData);
         response = await axios.put(
-          `http://localhost:3000/api/appointment/treatment-plan/${currentPlanId}`,
+          `http://localhost:3000/api/treatment-plan/${currentPlanId}`,
           treatmentData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -181,7 +194,6 @@ const DoctorTreatmentPlan = () => {
         );
         setSuccess("Treatment plan updated successfully");
       } else {
-        // Create new plan
         response = await axios.post(
           "http://localhost:3000/api/appointment/treatment-plan",
           treatmentData,
@@ -204,7 +216,7 @@ const DoctorTreatmentPlan = () => {
       if (!token) throw new Error("No authentication token found");
 
       await axios.delete(
-        `http://localhost:3000/api/appointment/treatment-plan/${planId}`,
+        `http://localhost:3000/api/treatment-plan/${planId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTreatmentPlans(treatmentPlans.filter((plan) => plan._id !== planId));
@@ -317,7 +329,7 @@ const DoctorTreatmentPlan = () => {
               {isEditing ? "Chỉnh sửa Phác đồ" : "Tạo Phác đồ Mới"}
             </DialogTitle>
             <DialogContent>
-              <FormControl fullWidth sx={{ mt: 2 }}>
+              <FormControl fullWidth sx={{ mt: 2 }} disabled={isEditing}>
                 <InputLabel id="patient-label">Bệnh nhân</InputLabel>
                 <Select
                   labelId="patient-label"
@@ -349,6 +361,18 @@ const DoctorTreatmentPlan = () => {
                   <MenuItem value="Custom">Tùy chỉnh</MenuItem>
                 </Select>
               </FormControl>
+              {formData.regimen === "Custom" && (
+                <TextField
+                  fullWidth
+                  label="Phác đồ tùy chỉnh"
+                  value={formData.customRegimen}
+                  onChange={(e) =>
+                    setFormData({ ...formData, customRegimen: e.target.value })
+                  }
+                  sx={{ mt: 2 }}
+                  required
+                />
+              )}
               <TextField
                 fullWidth
                 label="Ngày bắt đầu"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Paper,
@@ -12,7 +12,12 @@ import {
   InputAdornment,
   Avatar,
   IconButton,
-  LinearProgress
+  LinearProgress,
+  Snackbar,
+  Alert,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import {
   MedicalInformation as MedicalIcon,
@@ -23,10 +28,43 @@ import {
   Visibility as VisibilityIcon,
   MoreVert as MoreVertIcon,
   TrendingUp as TrendingUpIcon,
-  Payment as PaymentIcon
+  Payment as PaymentIcon,
+  Notifications as NotificationsIcon,
 } from '@mui/icons-material';
+import moment from 'moment';
+import reminderService from '../services/reminderService';
 
 function Dashboard() {
+  const [reminders, setReminders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+      try {
+        setLoading(true);
+        const data = await reminderService.getAllReminders();
+        setReminders(data);
+      } catch (err) {
+        setSnackbarMessage(err.response?.data?.message || "Failed to fetch reminders");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReminders();
+  }, []);
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: '#f8f9fa', minHeight: '100vh' }}>
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
@@ -182,6 +220,59 @@ function Dashboard() {
 
           {/* Right Sidebar */}
           <Grid item xs={12} lg={4}>
+            {/* Reminders Card */}
+            <Card sx={{ mb: 3, boxShadow: 2 }}>
+              <CardHeader 
+                title="Reminders" 
+                action={<IconButton><MoreVertIcon /></IconButton>}
+                titleTypographyProps={{ fontWeight: 600 }}
+              />
+              <CardContent>
+                {loading ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Loading reminders...
+                  </Typography>
+                ) : reminders.length === 0 ? (
+                  <Typography variant="body2" color="text.secondary">
+                    No reminders available.
+                  </Typography>
+                ) : (
+                  <List>
+                    {reminders.map((reminder) => (
+                      <ListItem
+                        key={reminder._id}
+                        sx={{ bgcolor: '#f8f9fa', mb: 1, borderRadius: 2 }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <NotificationsIcon sx={{ color: '#4A6D5A', fontSize: 20 }} />
+                              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                {reminder.type}
+                              </Typography>
+                            </Box>
+                          }
+                          secondary={
+                            <>
+                              <Typography variant="body2" color="text.secondary">
+                                {moment(reminder.reminderDate).format("DD/MM/YYYY HH:mm")}
+                              </Typography>
+                              <Typography variant="body2" color="text.primary">
+                                {reminder.message}
+                              </Typography>
+                              <Typography variant="body2" color={reminder.status === "Pending" ? "error" : "success"}>
+                                Status: {reminder.status}
+                              </Typography>
+                            </>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Health Expenses */}
             <Card sx={{ mb: 3, boxShadow: 2 }}>
               <CardHeader 
@@ -280,6 +371,19 @@ function Dashboard() {
           </Grid>
         </Grid>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
