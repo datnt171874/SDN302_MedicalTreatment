@@ -466,10 +466,50 @@ function MedicalRecords() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {medicalRecords.map((record, index) =>
-                        record.prescription ? (
+                      {medicalRecords.map((record, recordIndex) =>
+                        Array.isArray(record.prescription) ? (
+                          record.prescription.map((prescription, prescriptionIndex) => (
+                            <TableRow
+                              key={`${recordIndex}-${prescriptionIndex}`}
+                              sx={{
+                                "&:hover": { backgroundColor: "#f8f9fa" },
+                                transition: "background-color 0.2s ease",
+                              }}
+                            >
+                              <TableCell
+                                sx={{
+                                  py: 1.5,
+                                  fontWeight: 500,
+                                  fontSize: "0.85rem",
+                                }}
+                              >
+                                {prescription.medicationName || "N/A"}
+                              </TableCell>
+                              <TableCell
+                                sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
+                              >
+                                {prescription.dosage || "N/A"}
+                              </TableCell>
+                              <TableCell
+                                sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
+                              >
+                                {prescription.frequency || "N/A"}
+                              </TableCell>
+                              <TableCell
+                                sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
+                              >
+                                {prescription.duration || "N/A"}
+                              </TableCell>
+                              <TableCell
+                                sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
+                              >
+                                {prescription.instructions || "N/A"}
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
                           <TableRow
-                            key={index}
+                            key={recordIndex}
                             sx={{
                               "&:hover": { backgroundColor: "#f8f9fa" },
                               transition: "background-color 0.2s ease",
@@ -482,30 +522,30 @@ function MedicalRecords() {
                                 fontSize: "0.85rem",
                               }}
                             >
-                              {record.prescription.medicationName || "N/A"}
+                              N/A
                             </TableCell>
                             <TableCell
                               sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
                             >
-                              {record.prescription.dosage || "N/A"}
+                              N/A
                             </TableCell>
                             <TableCell
                               sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
                             >
-                              {record.prescription.frequency || "N/A"}
+                              N/A
                             </TableCell>
                             <TableCell
                               sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
                             >
-                              {record.prescription.duration || "N/A"}
+                              N/A
                             </TableCell>
                             <TableCell
                               sx={{ py: 1.5, color: "#666", fontSize: "0.85rem" }}
                             >
-                              {record.prescription.instructions || "N/A"}
+                              N/A
                             </TableCell>
                           </TableRow>
-                        ) : null
+                        )
                       )}
                     </TableBody>
                   </Table>

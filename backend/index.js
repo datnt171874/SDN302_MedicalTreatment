@@ -11,6 +11,7 @@ const seedRoute = require("./routes/seedRoute");
 const treatmentPlanRoute = require("./routes/treatmentPlanRoute");
 const reminderRoute = require("./routes/reminderRoute");
 const medicalRecordRoute = require("./routes/medicalRecordRoute");
+const pricingRoute = require("./routes/pricingRoute");
 
 dotenv.config();
 const app = express();
@@ -41,3 +42,4 @@ app.use("/api/seed", seedRoute);
 app.use("/api", treatmentPlanRoute);
 app.use("/api/reminders", reminderRoute);
 app.use("/api/medical-records", medicalRecordRoute);
+app.use("/api/pricing", pricingRoute);

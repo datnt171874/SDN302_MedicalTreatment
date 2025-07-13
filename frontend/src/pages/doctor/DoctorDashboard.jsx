@@ -51,6 +51,11 @@ const DoctorDashboard = () => {
       <Typography variant="h4" fontWeight="bold" gutterBottom color="black">
         Trang tổng quan của bác sĩ
       </Typography>
+      <Typography variant="h6" fontWeight="bold" gutterBottom color="black"
+          sx={{  cursor: 'pointer' }}
+      onClick={() => navigate('/doctor')}>
+        Trang Cá Nhân Bác Sĩ
+      </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper elevation={3} sx={{ p: 3, bgcolor: "#e8f5e9" }}>

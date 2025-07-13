@@ -44,6 +44,7 @@ const menuItems = [
     icon: <MedicalIcon />,
     path: "/doctor/treatments",
   },
+  
   { text: "Profile", icon: <SettingsIcon />, path: "/doctor/profile" },
 ];
 

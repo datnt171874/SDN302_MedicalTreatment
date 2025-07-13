@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:3000/api/appointment";
+const API_URL = "http://localhost:3000/api/appointment/appointment";
 
 export const appointmentService = {
   create: async (data) => {
@@ -13,7 +13,7 @@ export const appointmentService = {
     if (!token) {
       throw new Error("No authentication token found");
     }
-    return axios.get(`${API_URL}/appointment`, {
+    return axios.get(API_URL, {
       headers: { Authorization: `Bearer ${token}` },
     });
   },
@@ -29,15 +29,19 @@ export const appointmentService = {
       throw new Error("No authentication token found");
     }
     try {
-      console.log(
-        `Calling API: ${API_URL}/appointments?doctorId=${doctorId}&date=${date}`
+      if (!doctorId || !date) {
+        throw new Error("Missing doctorId or date");
+      }
+      const formattedDate = date; // Already formatted as YYYY-MM-DD
+      console.log(`Calling API: /api/appointment/appointments?doctorId=${doctorId}&date=${formattedDate}`);
+      const response = await axios.get(
+        `http://localhost:3000/api/appointment/appointments?doctorId=${doctorId}&date=${formattedDate}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
-      const response = await axios.get(`${API_URL}/appointments`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { doctorId, date },
-      });
       console.log("API response:", response.data);
-      return response.data;
+      return response.data || [];
     } catch (err) {
       console.error(
         "Error in getByDoctorAndDate:",
@@ -59,4 +63,20 @@ export const appointmentService = {
     });
     return response.data;
   },
+  checkExistingAppointments: async () => {
+    try {
+      console.log("Checking existing appointments for user");
+      const response = await axios.get(
+        "http://localhost:3000/api/appointment/appointment",
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      console.log("Existing appointments:", response.data);
+      return response.data.length > 0; 
+    } catch (err) {
+      console.error("Error checking existing appointments:", err.response?.data || err);
+      return false; 
+    }
+  }
 };

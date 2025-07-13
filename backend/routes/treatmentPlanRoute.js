@@ -7,5 +7,5 @@ router.post("/treatment-plan", authenticate, treatmentPlanController.createTreat
 router.get("/treatment-plan", authenticate, treatmentPlanController.getAllTreatmentPlans); 
 router.get("/treatment-plan/:id", authenticate, treatmentPlanController.getTreatmentPlanById);
 router.put("/treatment-plan/:id", authenticate, treatmentPlanController.updateTreatmentPlan);
-
+router.delete("/treatment-plan/:id", authenticate, treatmentPlanController.deleteTreatmentPlan);
 module.exports = router;

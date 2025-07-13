@@ -42,6 +42,7 @@ function App() {
       {!location.pathname.startsWith("/user") &&
         !location.pathname.startsWith("/doctor") &&
         !location.pathname.startsWith("/staff") && <Header />}
+        {location.pathname.startsWith("/doctor") && <HeaderDoctor />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/checkin" element={<CheckinPage />} />

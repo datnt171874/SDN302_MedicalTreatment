@@ -34,7 +34,8 @@ const createMedicalRecord = async (req, res) => {
         !med.medicationName ||
         !med.dosage ||
         !med.frequency ||
-        !med.duration
+        !med.duration ||
+        !med.instructions
       ) {
         return res.status(400).json({
           message: `Prescription item ${
